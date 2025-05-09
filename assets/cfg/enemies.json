@@ -1,0 +1,364 @@
+{
+    "Enemy01": {
+        "sound": "assets/snd/enemy_launch.ogg",
+        "image": "assets/img/enemy_01.png",
+        "animations": {
+            "number_frames": 16,
+            "list": [
+                {
+                    "name": "MOVE_UP",
+                    "start": 0,
+                    "end": 0,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_UP_DIAGLEFT",
+                    "start": 0,
+                    "end": 2,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_DIAGLEFT",
+                    "start": 2,
+                    "end": 2,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_DIAGLEFT_LEFT",
+                    "start": 2,
+                    "end": 4,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_LEFT",
+                    "start": 4,
+                    "end": 4,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_LEFT_DIAGDOWN",
+                    "start": 4,
+                    "end": 6,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_DIAGDOWN",
+                    "start": 6,
+                    "end": 6,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_DIAGDOWN_DOWN",
+                    "start": 6,
+                    "end": 8,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_DOWN",
+                    "start": 8,
+                    "end": 8,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_DOWN_DIAGRIGHT",
+                    "start": 8,
+                    "end": 10,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_DIAGRIGHT",
+                    "start": 10,
+                    "end": 10,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_DIAGRIGHT_RIGHT",
+                    "start": 10,
+                    "end": 12,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_RIGHT",
+                    "start": 12,
+                    "end": 12,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_RIGHT_DIAGUP",
+                    "start": 12,
+                    "end": 14,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_DIAGUP",
+                    "start": 14,
+                    "end": 14,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_DIAGUP_UP",
+                    "start": 14,
+                    "end": 15,
+                    "framerate": 10
+                }
+            ]
+        },
+        "velocity_chase": 75
+    },
+    "Enemy02": {
+        "sound": "assets/snd/enemy_launch.ogg",
+        "image": "assets/img/enemy_02.png",
+        "animations": {
+            "number_frames": 16,
+            "list": [
+                {
+                    "name": "MOVE_UP",
+                    "start": 0,
+                    "end": 0,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_UP_DIAGLEFT",
+                    "start": 0,
+                    "end": 2,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_DIAGLEFT",
+                    "start": 2,
+                    "end": 2,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_DIAGLEFT_LEFT",
+                    "start": 2,
+                    "end": 4,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_LEFT",
+                    "start": 4,
+                    "end": 4,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_LEFT_DIAGDOWN",
+                    "start": 4,
+                    "end": 6,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_DIAGDOWN",
+                    "start": 6,
+                    "end": 6,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_DIAGDOWN_DOWN",
+                    "start": 6,
+                    "end": 8,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_DOWN",
+                    "start": 8,
+                    "end": 8,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_DOWN_DIAGRIGHT",
+                    "start": 8,
+                    "end": 10,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_DIAGRIGHT",
+                    "start": 10,
+                    "end": 10,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_DIAGRIGHT_RIGHT",
+                    "start": 10,
+                    "end": 12,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_RIGHT",
+                    "start": 12,
+                    "end": 12,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_RIGHT_DIAGUP",
+                    "start": 12,
+                    "end": 14,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_DIAGUP",
+                    "start": 14,
+                    "end": 14,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_DIAGUP_UP",
+                    "start": 14,
+                    "end": 15,
+                    "framerate": 10
+                }
+            ]
+        },
+        "velocity_chase": 100
+    },
+    "Enemy03": {
+        "sound": "assets/snd/enemy_launch.ogg",
+        "image": "assets/img/enemy_03.png",
+        "animations": {
+            "number_frames": 10,
+            "list": [
+                {
+                    "name": "MOVE_LEFT",
+                    "start": 0,
+                    "end": 4,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_RIGHT",
+                    "start": 4,
+                    "end": 0,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE",
+                    "start": 4,
+                    "end": 4,
+                    "framerate": 10
+                }
+            ]
+        },
+        "velocity_chase": 100
+    },
+    "Enemy04": {
+        "sound": "assets/snd/enemy_launch.ogg",
+        "image": "assets/img/enemy_04.png",
+        "animations": {
+            "number_frames": 16,
+            "list": [
+                {
+                    "name": "MOVE_UP",
+                    "start": 0,
+                    "end": 0,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_UP_DIAGLEFT",
+                    "start": 0,
+                    "end": 2,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_DIAGLEFT",
+                    "start": 2,
+                    "end": 2,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_DIAGLEFT_LEFT",
+                    "start": 2,
+                    "end": 4,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_LEFT",
+                    "start": 4,
+                    "end": 4,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_LEFT_DIAGDOWN",
+                    "start": 4,
+                    "end": 6,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_DIAGDOWN",
+                    "start": 6,
+                    "end": 6,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_DIAGDOWN_DOWN",
+                    "start": 6,
+                    "end": 8,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_DOWN",
+                    "start": 8,
+                    "end": 8,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_DOWN_DIAGRIGHT",
+                    "start": 8,
+                    "end": 10,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_DIAGRIGHT",
+                    "start": 10,
+                    "end": 10,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_DIAGRIGHT_RIGHT",
+                    "start": 10,
+                    "end": 12,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_RIGHT",
+                    "start": 12,
+                    "end": 12,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_RIGHT_DIAGUP",
+                    "start": 12,
+                    "end": 14,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_DIAGUP",
+                    "start": 14,
+                    "end": 14,
+                    "framerate": 10
+                },
+                {
+                    "name": "MOVE_DIAGUP_UP",
+                    "start": 14,
+                    "end": 15,
+                    "framerate": 10
+                }
+            ]
+        },
+        "velocity_chase": 100
+    },
+    "Enemy05": {
+        "sound": "assets/snd/enemy_launch.ogg",
+        "image": "assets/img/enemy_space_05.png",
+        "animations": {
+            "number_frames": 4,
+            "list": [
+                {
+                    "name": "MOVE",
+                    "start": 0,
+                    "end": 0,
+                    "framerate": 10
+                }
+            ]
+        },
+        "velocity_chase": 100
+    }
+}

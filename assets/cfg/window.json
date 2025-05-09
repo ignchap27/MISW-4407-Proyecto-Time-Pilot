@@ -1,15 +1,13 @@
 {
-    "window": {
-        "title": "MISO - Introducción a videojuegos con ECS",
-        "size": {
-            "w": 640,
-            "h": 360
-        },
-        "bg_color": {
-            "r": 25,
-            "g": 25,
-            "b": 25
-        },
-        "framerate": 60
-    }
+    "title": "SPACE AVIATOR",
+    "size": {
+        "w": 224,
+        "h": 256
+    },
+    "bg_color": {
+        "r": 0,
+        "g": 0,
+        "b": 0
+    },
+    "framerate": 60
 }
