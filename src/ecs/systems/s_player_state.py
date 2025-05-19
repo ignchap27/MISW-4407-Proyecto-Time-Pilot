@@ -15,6 +15,13 @@ def system_player_state(world: esper.World, player_info: dict):
             _do_player_idle(c_st, c_a, c_v, player_info)
         elif c_st.state == PlayerState.MOVE:
             _do_player_move(c_st, c_a, c_v)
+def system_player_state(world: esper.World, player_info: dict):
+    components = world.get_components(CPlayerState, CAnimation, CVelocity)
+    for _, (c_st, c_a, c_v) in components:
+        if c_st.state == PlayerState.IDLE:
+            _do_player_idle(c_st, c_a, c_v, player_info)
+        elif c_st.state == PlayerState.MOVE:
+            _do_player_move(c_st, c_a, c_v)
 
 
 def _do_player_idle(c_st: CPlayerState, c_a: CAnimation, c_v: CVelocity, player_info: dict):
