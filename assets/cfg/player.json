@@ -3,102 +3,38 @@
     "animations": {
         "number_frames": 32,
         "list": [
-            {
-                "name": "MOVE_UP",
-                "start": 0,
-                "end": 0,
-                "framerate": 10
-            },
-            {
-                "name": "MOVE_UP_DIAGLEFT",
-                "start": 0,
-                "end": 3,
-                "framerate": 10
-            },
-            {
-                "name": "MOVE_DIAGLEFT",
-                "start": 3,
-                "end": 3,
-                "framerate": 10
-            },
-            {
-                "name": "MOVE_DIAGLEFT_LEFT",
-                "start": 3,
-                "end": 8,
-                "framerate": 10
-            },
-            {
-                "name": "MOVE_LEFT",
-                "start": 8,
-                "end": 8,
-                "framerate": 10
-            },
-            {
-                "name": "MOVE_LEFT_DIAGDOWN",
-                "start": 8,
-                "end": 12,
-                "framerate": 10
-            },
-            {
-                "name": "MOVE_DIAGDOWN",
-                "start": 12,
-                "end": 12,
-                "framerate": 10
-            },
-            {
-                "name": "MOVE_DIAGDOWN_DOWN",
-                "start": 12,
-                "end": 16,
-                "framerate": 10
-            },
-            {
-                "name": "MOVE_DOWN",
-                "start": 16,
-                "end": 16,
-                "framerate": 10
-            },
-            {
-                "name": "MOVE_DOWN_DIAGRIGHT",
-                "start": 16,
-                "end": 20,
-                "framerate": 10
-            },
-            {
-                "name": "MOVE_DIAGRIGHT",
-                "start": 20,
-                "end": 20,
-                "framerate": 10
-            },
-            {
-                "name": "MOVE_DIAGRIGHT_RIGHT",
-                "start": 20,
-                "end": 24,
-                "framerate": 10
-            },
-            {
-                "name": "MOVE_RIGHT",
-                "start": 24,
-                "end": 24,
-                "framerate": 10
-            },
-            {
-                "name": "MOVE_RIGHT_DIAGUP",
-                "start": 24,
-                "end": 29,
-                "framerate": 10
-            },
-            {
-                "name": "MOVE_DIAGUP",
-                "start": 29,
-                "end": 29,
-                "framerate": 10
-            },
-            {
-                "name": "MOVE_DIAGUP_UP",
-                "start": 29,
-                "end": 31,
-                "framerate": 10
-            }
+            { "name": "MOVE_UP", "start": 0, "end": 0, "framerate": 10 },
+            { "name": "MOVE_UP_UPLEFT", "start": 1, "end": 1, "framerate": 10 },
+            { "name": "MOVE_UPLEFT", "start": 2, "end": 2, "framerate": 10 },
+            { "name": "MOVE_UPLEFT_LEFTUP", "start": 3, "end": 3, "framerate": 10 },
+            { "name": "MOVE_LEFTUP", "start": 4, "end": 4, "framerate": 10 },
+            { "name": "MOVE_LEFTUP_LEFT", "start": 5, "end": 5, "framerate": 10 },
+            { "name": "MOVE_LEFT", "start": 6, "end": 6, "framerate": 10 },
+            { "name": "MOVE_LEFT_LEFTDOWN", "start": 7, "end": 7, "framerate": 10 },
+            { "name": "MOVE_LEFTDOWN", "start": 8, "end": 8, "framerate": 10 },
+            { "name": "MOVE_LEFTDOWN_DOWNLEFT", "start": 9, "end": 9, "framerate": 10 },
+            { "name": "MOVE_DOWNLEFT", "start": 10, "end": 10, "framerate": 10 },
+            { "name": "MOVE_DOWNLEFT_DOWN", "start": 11, "end": 11, "framerate": 10 },
+            { "name": "MOVE_DOWN", "start": 12, "end": 12, "framerate": 10 },
+            { "name": "MOVE_DOWN_DOWNRIGHT", "start": 13, "end": 13, "framerate": 10 },
+            { "name": "MOVE_DOWNRIGHT", "start": 14, "end": 14, "framerate": 10 },
+            { "name": "MOVE_DOWNRIGHT_RIGHTDOWN", "start": 15, "end": 15, "framerate": 10 },
+            { "name": "MOVE_RIGHTDOWN", "start": 16, "end": 16, "framerate": 10 },
+            { "name": "MOVE_RIGHTDOWN_RIGHT", "start": 17, "end": 17, "framerate": 10 },
+            { "name": "MOVE_RIGHT", "start": 18, "end": 18, "framerate": 10 },
+            { "name": "MOVE_RIGHT_RIGHTUP", "start": 19, "end": 19, "framerate": 10 },
+            { "name": "MOVE_RIGHTUP", "start": 20, "end": 20, "framerate": 10 },
+            { "name": "MOVE_RIGHTUP_UP", "start": 21, "end": 21, "framerate": 10 },
+            { "name": "MOVE_UP", "start": 22, "end": 22, "framerate": 10 },
+            { "name": "MOVE_UP_UPLEFT", "start": 23, "end": 23, "framerate": 10 },
+            { "name": "MOVE_UPLEFT", "start": 24, "end": 24, "framerate": 10 },
+            { "name": "MOVE_UPLEFT_LEFTUP", "start": 25, "end": 25, "framerate": 10 },
+            { "name": "MOVE_LEFTUP", "start": 26, "end": 26, "framerate": 10 },
+            { "name": "MOVE_LEFTUP_LEFT", "start": 27, "end": 27, "framerate": 10 },
+            { "name": "MOVE_LEFT", "start": 28, "end": 28, "framerate": 10 },
+            { "name": "MOVE_LEFT_LEFTDOWN", "start": 29, "end": 29, "framerate": 10 },
+            { "name": "MOVE_LEFTDOWN", "start": 30, "end": 30, "framerate": 10 },
+            { "name": "MOVE_LEFTDOWN_DOWNLEFT", "start": 31, "end": 31, "framerate": 10 }
         ]
     },
     "input_velocity": 100,
