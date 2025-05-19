@@ -45,11 +45,9 @@ def create_sprite(world: esper.World, pos: pygame.Vector2, vel: pygame.Vector2,
 
 def create_enemy_square(world: esper.World, pos: pygame.Vector2, enemy_info: dict):
     enemy_surface = ServiceLocator.images_service.get(enemy_info["image"])
-    vel_max = enemy_info["velocity_max"]
-    vel_min = enemy_info["velocity_min"]
-    vel_range = random.randrange(vel_min, vel_max)
-    velocity = pygame.Vector2(random.choice([-vel_range, vel_range]),
-                              random.choice([-vel_range, vel_range]))
+    vel = enemy_info["velocity_chase"]
+    velocity = pygame.Vector2(random.choice([-vel, vel]), random.choice([-vel, vel]))
+
     enemy_entity = create_sprite(world, pos, velocity, enemy_surface)
     world.add_component(enemy_entity, CTagEnemy("Bouncer"))
     ServiceLocator.sounds_service.play(enemy_info["sound"])

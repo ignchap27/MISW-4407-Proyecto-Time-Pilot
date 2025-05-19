@@ -39,6 +39,8 @@ class GameEngine:
 
         pygame.init()
         pygame.display.set_caption(self.window_cfg["title"])
+        print("Window size:", self.window_cfg["size"])
+
         self.screen = pygame.display.set_mode((self.window_cfg["size"]["w"], self.window_cfg["size"]["h"]), 0)
 
         self.clock = pygame.time.Clock()
@@ -53,34 +55,53 @@ class GameEngine:
         self.num_bullets = 0
         self.special_charge = 0
 
-        font_path = self.interface_config["font_path"]
-        text_title_size = self.interface_config["text_title_size"]
-        text_size = self.interface_config["text_size"]
+        #font_path = self.interface_config["font_path"]
+        
+        font_path = "assets/fnt/PressStart2P.ttf"
+        
+        #text_title_size = self.interface_config["text_title_size"]
+        text_title_size = 40
+
+        #text_size = self.interface_config["text_size"]
+
+        text_size = 20
+
+
         self.title_font = ServiceLocator.fonts_service.get(font_path, text_title_size)
         self.font = ServiceLocator.fonts_service.get(font_path, text_size)
-        self.text_title = self.interface_config["text_title"]
-        self.text_subtitle = self.interface_config["text_subtitle"]
-        self.text_title_color = tuple(self.interface_config["text_title_color"])
-        self.text_subtitle_color = tuple(self.interface_config["text_subtitle_color"])
+        #self.text_title = self.interface_config["text_title"]
+        self.text_title = "Time Pilot"
+
+        #self.text_subtitle = self.interface_config["text_subtitle"]
+
+        self.text_subtitle = "Please deposit coin"
+        
+        color_data = self.interface_config["title_text_color"]
+        self.text_title_color = (color_data["r"], color_data["g"], color_data["b"])
+
+        print(self.text_title_color)
+        color_data = self.interface_config["normal_text_color"]
+        self.text_subtitle_color = (color_data["r"], color_data["g"], color_data["b"])
+
 
         self.is_paused = False
 
     def _load_config_files(self):
-        with open("dist/assets/cfg/window.json", encoding="utf-8") as window_file:
+        with open("assets/cfg/window.json", encoding="utf-8") as window_file:
             self.window_cfg = json.load(window_file)
-        with open("dist/assets/cfg/enemies.json", encoding="utf-8") as enemies_file:
+        with open("assets/cfg/enemies.json", encoding="utf-8") as enemies_file:
             self.enemies_cfg = json.load(enemies_file)
-        with open("dist/assets/cfg/level_01.json", encoding="utf-8") as level_01_file:
+        with open("assets/cfg/level_01.json", encoding="utf-8") as level_01_file:
             self.level_01_cfg = json.load(level_01_file)
-        with open("dist/assets/cfg/player.json", encoding="utf-8") as player_file:
+        with open("assets/cfg/player.json", encoding="utf-8") as player_file:
             self.player_cfg = json.load(player_file)
-        with open("dist/assets/cfg/bullet.json", encoding="utf-8") as bullet_file:
+        with open("assets/cfg/bullet.json", encoding="utf-8") as bullet_file:
             self.bullet_cfg = json.load(bullet_file)
-        with open("dist/assets/cfg/explosion.json", encoding="utf-8") as explosion_file:
+        with open("assets/cfg/explosion.json", encoding="utf-8") as explosion_file:
             self.explosion_cfg = json.load(explosion_file)
-        with open("dist/assets/cfg/fireball.json", encoding="utf-8") as fireball_file:
-            self.fireball_cfg = json.load(fireball_file)
-        with open("dist/assets/cfg/interface.json", "r") as file:
+        #with open("dist/assets/cfg/fireball.json", encoding="utf-8") as fireball_file:
+        #    self.fireball_cfg = json.load(fireball_file)
+        with open("assets/cfg/interface.json", "r") as file:
             self.interface_config = json.load(file)
 
 
@@ -137,7 +158,14 @@ class GameEngine:
         system_explosion_kill(self.ecs_world)
 
         system_player_state(self.ecs_world, self.player_cfg)
-        system_enemy_hunter_state(self.ecs_world, self._player_entity, self.enemies_cfg["Hunter"])
+        system_enemy_hunter_state(self.ecs_world, self._player_entity, self.enemies_cfg["Enemy01"])
+        system_enemy_hunter_state(self.ecs_world, self._player_entity, self.enemies_cfg["Enemy02"])
+        system_enemy_hunter_state(self.ecs_world, self._player_entity, self.enemies_cfg["Enemy03"])
+        system_enemy_hunter_state(self.ecs_world, self._player_entity, self.enemies_cfg["Enemy04"])
+        system_enemy_hunter_state(self.ecs_world, self._player_entity, self.enemies_cfg["Enemy05"])
+
+
+
 
         system_animation(self.ecs_world, self.delta_time)
 

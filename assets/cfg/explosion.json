@@ -1,6 +1,6 @@
 {
-    "sound": "assets/snd/explosion.ogg",
-    "image": "assets/img/explosion.png",
+    "sound": "assets/snd/enemy_die.ogg",
+    "image": "assets/img/explosion_middle_enemies.png",
     "animations": {
         "number_frames": 8,
         "list": [
