@@ -42,43 +42,25 @@ def _do_player_move(c_st: CPlayerState, c_a: CAnimation, c_v: CVelocity):
 
 def _get_direction_name(velocity: pygame.Vector2) -> str:
     """Determina el nombre de la animación según el vector de velocidad"""
-    if velocity.magnitude_squared() == 0:
-        return "MOVE_UP"
-
-    angle = math.degrees(math.atan2(-velocity.y, velocity.x)) % 360
-
-    # Map the angle to the corresponding animation name
-    if 0 <= angle < 11.25 or 348.75 <= angle <= 360:
-        return "MOVE_RIGHT"
-    elif 11.25 <= angle < 33.75:
-        return "MOVE_RIGHT_RIGHTUP"
-    elif 33.75 <= angle < 56.25:
-        return "MOVE_RIGHTUP"
-    elif 56.25 <= angle < 78.75:
-        return "MOVE_RIGHTUP_UP"
-    elif 78.75 <= angle < 101.25:
-        return "MOVE_UP"
-    elif 101.25 <= angle < 123.75:
-        return "MOVE_UP_UPLEFT"
-    elif 123.75 <= angle < 146.25:
-        return "MOVE_UPLEFT"
-    elif 146.25 <= angle < 168.75:
-        return "MOVE_UPLEFT_LEFTUP"
-    elif 168.75 <= angle < 191.25:
-        return "MOVE_LEFTUP"
-    elif 191.25 <= angle < 213.75:
-        return "MOVE_LEFTUP_LEFT"
-    elif 213.75 <= angle < 236.25:
-        return "MOVE_LEFT"
-    elif 236.25 <= angle < 258.75:
-        return "MOVE_LEFT_LEFTDOWN"
-    elif 258.75 <= angle < 281.25:
-        return "MOVE_LEFTDOWN"
-    elif 281.25 <= angle < 303.75:
-        return "MOVE_LEFTDOWN_DOWNLEFT"
-    elif 303.75 <= angle < 326.25:
-        return "MOVE_DOWNLEFT"
-    elif 326.25 <= angle < 348.75:
-        return "MOVE_DOWNLEFT_DOWN"
+    x, y = velocity.x, velocity.y
     
+    # Determinar los ángulos principales
+    if abs(x) < 0.1 and y < 0:
+        return "MOVE_UP"
+    elif abs(x) < 0.1 and y > 0:
+        return "MOVE_DOWN"
+    elif x < 0 and abs(y) < 0.1:
+        return "MOVE_LEFT"
+    elif x > 0 and abs(y) < 0.1:
+        return "MOVE_RIGHT"
+    elif x < 0 and y < 0:
+        return "MOVE_DIAGLEFT"
+    elif x < 0 and y > 0:
+        return "MOVE_DIAGDOWN"
+    elif x > 0 and y > 0:
+        return "MOVE_DIAGRIGHT"
+    elif x > 0 and y < 0:
+        return "MOVE_DIAGUP"
+    
+    # Por defecto
     return "MOVE_UP"
