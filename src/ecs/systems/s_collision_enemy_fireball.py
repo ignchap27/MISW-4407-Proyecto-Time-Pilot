@@ -22,5 +22,5 @@ def system_collision_enemy_fireball(world: esper.World, pl_special_charge: CSpec
             if ene_rect.colliderect(bull_rect):
                 world.delete_entity(enemy_entity)
                 world.delete_entity(fireball_entity)
-                create_explosion(world, c_t.pos, explosion_info["ExplBomb"])
+                create_explosion(world, c_t.pos, explosion_info)
                 pl_special_charge.add_charge()
