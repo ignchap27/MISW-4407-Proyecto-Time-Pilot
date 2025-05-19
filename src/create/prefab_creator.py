@@ -15,7 +15,6 @@ from src.ecs.components.tags.c_tag_fireball import CTagFireball
 from src.ecs.components.tags.c_tag_explosion import CTagExplosion
 from src.ecs.components.c_animation import CAnimation
 from src.ecs.components.c_player_state import CPlayerState
-from src.ecs.components.c_enemy_hunter_state import CEnemyHunterState
 from src.engine.service_locator import ServiceLocator
 
 
@@ -43,24 +42,34 @@ def create_sprite(world: esper.World, pos: pygame.Vector2, vel: pygame.Vector2,
     return sprite_entity
 
 
-def create_enemy_square(world: esper.World, pos: pygame.Vector2, enemy_info: dict):
+# def create_enemy_square(world: esper.World, pos: pygame.Vector2, enemy_info: dict):
+#     enemy_surface = ServiceLocator.images_service.get(enemy_info["image"])
+#     vel = enemy_info["velocity_chase"]
+#     velocity = pygame.Vector2(random.choice([-vel, vel]), random.choice([-vel, vel]))
+
+#     enemy_entity = create_sprite(world, pos, velocity, enemy_surface)
+#     world.add_component(enemy_entity, CTagEnemy("Bouncer"))
+#     ServiceLocator.sounds_service.play(enemy_info["sound"])
+
+def create_enemy(world: esper.World, pos: pygame.Vector2, enemy_info: dict):
     enemy_surface = ServiceLocator.images_service.get(enemy_info["image"])
-    vel = enemy_info["velocity_chase"]
-    velocity = pygame.Vector2(random.choice([-vel, vel]), random.choice([-vel, vel]))
-
+    # Asigna una velocidad aleatoria o fija
+    speed = enemy_info.get("velocity", 100)  # Usa un valor por defecto si no existe
+    angle = random.uniform(0, 2 * 3.14159)
+    velocity = pygame.Vector2(speed, 0).rotate_rad(angle)
     enemy_entity = create_sprite(world, pos, velocity, enemy_surface)
-    world.add_component(enemy_entity, CTagEnemy("Bouncer"))
-    ServiceLocator.sounds_service.play(enemy_info["sound"])
 
+    c_anim = CAnimation(enemy_info["animations"])
+    world.add_component(enemy_entity, c_anim)
+    world.add_component(enemy_entity, CTagEnemy("normal"))
 
-def create_enemy_hunter(world: esper.World, pos: pygame.Vector2, enemy_info: dict):
-    enemy_surface = ServiceLocator.images_service.get(enemy_info["image"])
-    velocity = pygame.Vector2(0, 0)
-    enemy_entity = create_sprite(world, pos, velocity, enemy_surface)
-    world.add_component(enemy_entity, CEnemyHunterState(pos))
-    world.add_component(enemy_entity,
-                        CAnimation(enemy_info["animations"]))
-    world.add_component(enemy_entity, CTagEnemy("Hunter"))
+    # Ajustar el área del sprite para mostrar solo el primer frame correctamente
+    c_surf = world.component_for_entity(enemy_entity, CSurface)
+    if c_surf is not None and c_anim is not None and c_anim.number_frames > 0:
+        sprite_sheet_width = c_surf.surf.get_width()
+        frame_width = sprite_sheet_width / c_anim.number_frames
+        c_surf.area.width = int(frame_width)
+        c_surf.area.x = int(frame_width * c_anim.curr_frame)
 
 
 def create_player_square(world: esper.World, player_info: dict, player_lvl_info: dict) -> int:

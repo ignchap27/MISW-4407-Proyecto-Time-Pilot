@@ -1,4 +1,3 @@
-
 from typing import List
 
 
@@ -12,7 +11,7 @@ class CAnimation:
             self.animations_list.append(anim_data)
 
         self.curr_anim = 0
-        self.curr_anim_time = 0
+        self.curr_anim_time = self.animations_list[0].framerate
         self.curr_frame = self.animations_list[self.curr_anim].start
 
 
@@ -26,7 +25,14 @@ class AnimationData:
 
 def set_animation(c_a: CAnimation, anim_name: str):
     for idx, anim in enumerate(c_a.animations_list):
-        if anim.name == anim_name and c_a.curr_anim != idx:
-            c_a.curr_anim = idx
-            c_a.curr_anim_time = 0
-            c_a.curr_frame = c_a.animations_list[c_a.curr_anim].start
+        if anim.name == anim_name:
+            # Solo cambiar si es una animación diferente
+            if c_a.curr_anim != idx:
+                c_a.curr_anim = idx
+                # Iniciar con el tiempo completo en lugar de 0
+                c_a.curr_anim_time = c_a.animations_list[c_a.curr_anim].framerate
+                c_a.curr_frame = c_a.animations_list[c_a.curr_anim].start
+            return
+    
+    # Si el nombre de animación no existe, mostrar advertencia
+    print(f"Advertencia: No se encontró la animación '{anim_name}'")

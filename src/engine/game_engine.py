@@ -10,6 +10,7 @@ from src.ecs.systems.s_collision_player_enemy import system_collision_player_ene
 from src.ecs.systems.s_collision_enemy_bullet import system_collision_enemy_bullet
 
 from src.ecs.systems.s_enemy_spawner import system_enemy_spawner
+from src.ecs.systems.s_enemy_state import system_enemy_state
 from src.ecs.systems.s_input_player import system_input_player
 from src.ecs.systems.s_movement import system_movement
 from src.ecs.systems.s_rendering import system_rendering
@@ -19,7 +20,6 @@ from src.ecs.systems.s_screen_bullet import system_screen_bullet
 
 from src.ecs.systems.s_player_state import system_player_state
 from src.ecs.systems.s_explosion_kill import system_explosion_kill
-from src.ecs.systems.s_enemy_hunter_state import system_enemy_hunter_state
 
 from src.ecs.components.c_special_charge import CSpecialCharge
 from src.ecs.components.c_velocity import CVelocity
@@ -158,11 +158,7 @@ class GameEngine:
         system_explosion_kill(self.ecs_world)
 
         system_player_state(self.ecs_world, self.player_cfg)
-        system_enemy_hunter_state(self.ecs_world, self._player_entity, self.enemies_cfg["Enemy01"])
-        system_enemy_hunter_state(self.ecs_world, self._player_entity, self.enemies_cfg["Enemy02"])
-        system_enemy_hunter_state(self.ecs_world, self._player_entity, self.enemies_cfg["Enemy03"])
-        system_enemy_hunter_state(self.ecs_world, self._player_entity, self.enemies_cfg["Enemy04"])
-        system_enemy_hunter_state(self.ecs_world, self._player_entity, self.enemies_cfg["Enemy05"])
+        system_enemy_state(self.ecs_world)
 
 
 
