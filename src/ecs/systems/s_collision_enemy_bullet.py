@@ -22,5 +22,5 @@ def system_collision_enemy_bullet(world: esper.World, pl_special_charge: CSpecia
             if ene_rect.colliderect(bull_rect):
                 world.delete_entity(enemy_entity)
                 world.delete_entity(bullet_entity)
-                create_explosion(world, c_t.pos, explosion_info)
+                create_explosion(world, c_t.pos, explosion_info["ExplNormal"])
                 pl_special_charge.add_charge()
