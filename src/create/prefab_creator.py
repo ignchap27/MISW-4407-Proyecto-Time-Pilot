@@ -95,43 +95,43 @@ def create_enemy_spawner(world: esper.World, level_data: dict):
 
 
 def create_input_player(world: esper.World):
-    input_left = world.create_entity()
-    input_right = world.create_entity()
     input_up = world.create_entity()
-    input_down = world.create_entity()
+    input_down = world.create_entity()  # Opcional, para frenar/detener empuje
 
-    world.add_component(input_left,
-                        CInputCommand("PLAYER_LEFT", pygame.K_LEFT))
-    world.add_component(input_right,
-                        CInputCommand("PLAYER_RIGHT", pygame.K_RIGHT))
     world.add_component(input_up,
-                        CInputCommand("PLAYER_UP", pygame.K_UP))
+                        CInputCommand("PLAYER_UP", pygame.K_UP))  # Controla el empuje
     world.add_component(input_down,
-                        CInputCommand("PLAYER_DOWN", pygame.K_DOWN))
+                        CInputCommand("PLAYER_DOWN", pygame.K_DOWN))  # Opcional
 
     input_fire = world.create_entity()
     world.add_component(input_fire,
-                        CInputCommand("PLAYER_FIRE", pygame.BUTTON_LEFT))
+                        CInputCommand("PLAYER_FIRE", pygame.BUTTON_LEFT))  # Disparo principal
     input_special = world.create_entity()
     world.add_component(input_special,
                         CInputCommand("SPECIAL_ATTACK", pygame.BUTTON_RIGHT))
 
 
 def create_bullet(world: esper.World,
-                  mouse_pos: pygame.Vector2,
-                  player_pos: pygame.Vector2,
-                  player_size: pygame.Vector2,
+                  player_fire_origin_pos: pygame.Vector2,  # Posición central del jugador en pantalla
+                  player_sprite_size: pygame.Vector2,     # Tamaño del sprite del jugador (para offsets si es necesario)
+                  fire_angle_degrees: float,             # Ángulo de disparo del jugador
                   bullet_info: dict):
     bullet_surface = ServiceLocator.images_service.get(bullet_info["image"])
-    bullet_size = bullet_surface.get_rect().size
-    pos = pygame.Vector2(player_pos.x + (player_size[0] / 2) - (bullet_size[0] / 2),
-                         player_pos.y + (player_size[1] / 2) - (bullet_size[1] / 2))
-    vel = (mouse_pos - player_pos)
-    vel = vel.normalize() * bullet_info["velocity"]
+    bullet_sprite_size_vec = pygame.Vector2(bullet_surface.get_rect().size)
+
+    # La posición inicial de la bala es el centro del jugador.
+    # Se ajusta para que el centro de la bala coincida con el centro del jugador.
+    pos = player_fire_origin_pos - bullet_sprite_size_vec / 2
+    
+    # Calcular el vector de velocidad basado en fire_angle_degrees
+    # pygame.Vector2(0, -1) es ARRIBA. Rotamos este vector por el ángulo del jugador.
+    direction_vector = pygame.Vector2(0, -1).rotate(fire_angle_degrees)
+    vel = direction_vector.normalize() * bullet_info["velocity"]
 
     bullet_entity = create_sprite(world, pos, vel, bullet_surface)
     world.add_component(bullet_entity, CTagBullet())
     ServiceLocator.sounds_service.play(bullet_info["sound"])
+
 
 def create_fireball(world: esper.World,
                   direction: pygame.Vector2,
