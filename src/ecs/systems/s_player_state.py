@@ -2,44 +2,59 @@ import esper
 import pygame
 
 from src.ecs.components.c_animation import CAnimation, set_animation
-from src.ecs.components.c_player_state import CPlayerState
+from src.ecs.components.c_player_state import CPlayerState, PlayerState
+from src.ecs.components.c_velocity import CVelocity
 from src.engine.service_locator import ServiceLocator
 
 
-def system_player_state(world: esper.World, player_info: dict, player_angle: float, player_is_thrusting: bool):
-    components = world.get_components(CPlayerState, CAnimation)
-    for entity, (c_st, c_a) in components:
-        direction_name = _get_direction_name_from_angle(player_angle)
-        set_animation(c_a, direction_name)
+def system_player_state(world: esper.World, player_info: dict):
+    components = world.get_components(CPlayerState, CAnimation, CVelocity)
+    for _, (c_st, c_a, c_v) in components:
+        if c_st.state == PlayerState.IDLE:
+            _do_player_idle(c_st, c_a, c_v, player_info)
+        elif c_st.state == PlayerState.MOVE:
+            _do_player_move(c_st, c_a, c_v)
 
 
-def _get_direction_name_from_angle(angle_degrees: float) -> str:
-    """
-    Determina el nombre de la animación según el ángulo en grados.
-    Pygame y Vector2.rotate(): 0 es Eje X positivo (Derecha).
-    GameEngine usa: 0=UP, 90=RIGHT, 180=DOWN, 270=LEFT.
-    Esta función espera el ángulo como lo define GameEngine.
-    """
+def _do_player_idle(c_st: CPlayerState, c_a: CAnimation, c_v: CVelocity, player_info: dict):
+    # Usar MOVE_UP como animación por defecto cuando está quieto
+    set_animation(c_a, "MOVE_UP")
+    if c_v.vel.magnitude_squared() > 0:
+        c_st.state = PlayerState.MOVE
+
+
+def _do_player_move(c_st: CPlayerState, c_a: CAnimation, c_v: CVelocity):
+    # Determinar la dirección del movimiento
+    direction = _get_direction_name(c_v.vel)
+    set_animation(c_a, direction)
     
-    angle_degrees %= 360
-    if angle_degrees < 0:
-        angle_degrees += 360
+    if c_v.vel.magnitude_squared() <= 0:
+        c_st.state = PlayerState.IDLE
 
-    if (angle_degrees >= 337.5 or angle_degrees < 22.5):
+
+def _get_direction_name(velocity: pygame.Vector2) -> str:
+    """Determina el nombre de la animación según el vector de velocidad"""
+    x, y = velocity.x, velocity.y
+    
+    # Determinar los ángulos principales
+    if abs(x) < 0.1 and y < 0:
         return "MOVE_UP"
-    elif angle_degrees < 67.5:
-        return "MOVE_DIAGUP"
-    elif angle_degrees < 112.5:
-        return "MOVE_RIGHT"
-    elif angle_degrees < 157.5:
-        return "MOVE_DIAGRIGHT"
-    elif angle_degrees < 202.5:
+    elif abs(x) < 0.1 and y > 0:
         return "MOVE_DOWN"
-    elif angle_degrees < 247.5:
-        return "MOVE_DIAGDOWN"
-    elif angle_degrees < 292.5:
+    elif x < 0 and abs(y) < 0.1:
         return "MOVE_LEFT"
-    elif angle_degrees < 337.5:
-        return "MOVE_DIAGLEFT"
+    elif x > 0 and abs(y) < 0.1:
+        return "MOVE_RIGHT"
     
+    # Determinar las diagonales
+    elif x < 0 and y < 0:
+        return "MOVE_DIAGLEFT"
+    elif x < 0 and y > 0:
+        return "MOVE_DIAGDOWN"
+    elif x > 0 and y > 0:
+        return "MOVE_DIAGRIGHT"
+    elif x > 0 and y < 0:
+        return "MOVE_DIAGUP"
+    
+    # Por defecto
     return "MOVE_UP"

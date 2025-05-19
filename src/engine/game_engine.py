@@ -2,7 +2,6 @@ import asyncio
 import json
 import pygame
 import esper
-import math
 
 from src.ecs.systems.s_animation import system_animation
 
@@ -54,34 +53,38 @@ class GameEngine:
         self.ecs_world = esper.World()
 
         self.num_bullets = 0
+        self.special_charge = 0
 
+        #font_path = self.interface_config["font_path"]
+        
         font_path = "assets/fnt/PressStart2P.ttf"
+        
+        #text_title_size = self.interface_config["text_title_size"]
         text_title_size = 40
+
+        #text_size = self.interface_config["text_size"]
+
         text_size = 20
+
 
         self.title_font = ServiceLocator.fonts_service.get(font_path, text_title_size)
         self.font = ServiceLocator.fonts_service.get(font_path, text_size)
+        #self.text_title = self.interface_config["text_title"]
         self.text_title = "Time Pilot"
+
+        #self.text_subtitle = self.interface_config["text_subtitle"]
+
         self.text_subtitle = "Please deposit coin"
         
         color_data = self.interface_config["title_text_color"]
         self.text_title_color = (color_data["r"], color_data["g"], color_data["b"])
 
+        print(self.text_title_color)
         color_data = self.interface_config["normal_text_color"]
         self.text_subtitle_color = (color_data["r"], color_data["g"], color_data["b"])
 
+
         self.is_paused = False
-
-        self._player_angle = 0.0
-        self._player_scroll_speed = self.player_cfg["input_velocity"]
-        self._player_is_thrusting = False
-
-        try:
-            with open("assets/cfg/fireball.json", encoding="utf-8") as fireball_file:
-                self.fireball_cfg = json.load(fireball_file)
-        except FileNotFoundError:
-            print("Warning: assets/cfg/fireball.json not found. Special attack might not work.")
-            self.fireball_cfg = None
 
     def _load_config_files(self):
         with open("assets/cfg/window.json", encoding="utf-8") as window_file:
@@ -96,8 +99,11 @@ class GameEngine:
             self.bullet_cfg = json.load(bullet_file)
         with open("assets/cfg/explosion.json", encoding="utf-8") as explosion_file:
             self.explosion_cfg = json.load(explosion_file)
+        #with open("dist/assets/cfg/fireball.json", encoding="utf-8") as fireball_file:
+        #    self.fireball_cfg = json.load(fireball_file)
         with open("assets/cfg/interface.json", "r") as file:
             self.interface_config = json.load(file)
+
 
     async def run(self) -> None:
         self._create()
@@ -111,20 +117,11 @@ class GameEngine:
         self._clean()
 
     def _create(self):
-        player_spawn_pos_cfg = {
-            "position": {
-                "x": self.screen.get_width() / 2,
-                "y": self.screen.get_height() / 2
-            }
-        }
-        self._player_entity = create_player_square(self.ecs_world, self.player_cfg, player_spawn_pos_cfg)
+        self._player_entity = create_player_square(self.ecs_world, self.player_cfg, self.level_01_cfg["player_spawn"])
         self._player_c_v = self.ecs_world.component_for_entity(self._player_entity, CVelocity)
         self._player_c_t = self.ecs_world.component_for_entity(self._player_entity, CTransform)
         self._player_c_s = self.ecs_world.component_for_entity(self._player_entity, CSurface)
         self._player_s_c = self.ecs_world.component_for_entity(self._player_entity, CSpecialCharge)
-        
-        if self._player_c_v:
-            self._player_c_v.vel = pygame.Vector2(0, 0)
 
         create_enemy_spawner(self.ecs_world, self.level_01_cfg)
         create_input_player(self.ecs_world)
@@ -146,29 +143,8 @@ class GameEngine:
         if self.is_paused:
             return
         
-        player_screen_center_x = self.screen.get_width() / 2
-        player_screen_center_y = self.screen.get_height() / 2
-        
-        mouse_x, mouse_y = pygame.mouse.get_pos()
-        
-        delta_x = mouse_x - player_screen_center_x
-        delta_y = mouse_y - player_screen_center_y
-
-        direction_to_mouse = pygame.Vector2(delta_x, delta_y)
-        if direction_to_mouse.length_squared() > 0:
-            self._player_angle = pygame.Vector2(0, -1).angle_to(direction_to_mouse)
-
-        self._player_angle %= 360
-        if self._player_angle < 0:
-            self._player_angle += 360
-
         system_enemy_spawner(self.ecs_world, self.enemies_cfg, self.delta_time)
-        
-        current_scroll_magnitude = self._player_scroll_speed if self._player_is_thrusting else 0
-        player_direction_vector = pygame.Vector2(0, -1).rotate(self._player_angle)
-        scroll_vector = -player_direction_vector * current_scroll_magnitude
-        
-        system_movement(self.ecs_world, self.delta_time, scroll_vector)
+        system_movement(self.ecs_world, self.delta_time)
 
         system_screen_bounce(self.ecs_world, self.screen)
         system_screen_player(self.ecs_world, self.screen)
@@ -181,8 +157,11 @@ class GameEngine:
 
         system_explosion_kill(self.ecs_world)
 
-        system_player_state(self.ecs_world, self.player_cfg,  self._player_angle, self._player_is_thrusting)
+        system_player_state(self.ecs_world, self.player_cfg)
         system_enemy_state(self.ecs_world)
+
+
+
 
         system_animation(self.ecs_world, self.delta_time)
 
@@ -213,27 +192,46 @@ class GameEngine:
         pygame.quit()
         
     def _do_action(self, c_input: CInputCommand):
+        if c_input.name == "PLAYER_LEFT":
+            if c_input.phase == CommandPhase.START:
+                self._player_c_v.vel.x -= self.player_cfg["input_velocity"]
+            elif c_input.phase == CommandPhase.END:
+                self._player_c_v.vel.x += self.player_cfg["input_velocity"]
+        if c_input.name == "PLAYER_RIGHT":
+            if c_input.phase == CommandPhase.START:
+                self._player_c_v.vel.x += self.player_cfg["input_velocity"]
+            elif c_input.phase == CommandPhase.END:
+                self._player_c_v.vel.x -= self.player_cfg["input_velocity"]
         if c_input.name == "PLAYER_UP":
             if c_input.phase == CommandPhase.START:
-                self._player_is_thrusting = True
+                self._player_c_v.vel.y -= self.player_cfg["input_velocity"]
             elif c_input.phase == CommandPhase.END:
-                self._player_is_thrusting = False
+                self._player_c_v.vel.y += self.player_cfg["input_velocity"]
         if c_input.name == "PLAYER_DOWN":
             if c_input.phase == CommandPhase.START:
-                self._player_is_thrusting = False
+                self._player_c_v.vel.y += self.player_cfg["input_velocity"]
+            elif c_input.phase == CommandPhase.END:
+                self._player_c_v.vel.y -= self.player_cfg["input_velocity"]
 
         if c_input.name == "PLAYER_FIRE" and self.num_bullets < self.level_01_cfg["player_spawn"]["max_bullets"]:
-            ServiceLocator.sounds_service.play(self.bullet_cfg["sound"])
-            player_screen_center_pos = pygame.Vector2(self.screen.get_width() / 2, self.screen.get_height() / 2)
-            
-            create_bullet(self.ecs_world, 
-                          player_screen_center_pos,
-                          self._player_c_s.area.size,
-                          self._player_angle,
-                          self.bullet_cfg)
+            create_bullet(self.ecs_world, c_input.mouse_pos, self._player_c_t.pos,
+                          self._player_c_s.area.size, self.bullet_cfg)
         
         if c_input.name == "SPECIAL_ATTACK" and self._player_s_c.is_fully_charged():
-            if self.fireball_cfg:
-                player_center_pos = self._player_c_t.pos + pygame.Vector2(self._player_c_s.area.width / 2, self._player_c_s.area.height / 2)
-            else:
-                print("Warning: Fireball config not loaded, special attack cannot be performed.")
+            directions = [
+                (0, -1),  # Arriba
+                (0, 1),   # Abajo
+                (-1, -1), # Arriba Izquierda
+                (-1, 1),  # Abajo Izquierda
+                (1, -1),  # Arriba Derecha
+                (1, 1),   # Abajo Derecha
+                (-1, 0),  # Izquierda
+                (1, 0)    # Derecha
+            ]
+
+
+            for dx, dy in directions:
+                create_fireball(self.ecs_world, (self._player_c_t.pos.x + dx, self._player_c_t.pos.y + dy),
+                            self._player_c_t.pos, self._player_c_s.area.size, self.fireball_cfg)
+            
+            self._player_s_c.reset_charge()
