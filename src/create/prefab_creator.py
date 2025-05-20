@@ -53,8 +53,17 @@ def create_sprite(world: esper.World, pos: pygame.Vector2, vel: pygame.Vector2,
 
 def create_enemy(world: esper.World, pos: pygame.Vector2, enemy_info: dict):
     enemy_surface = ServiceLocator.images_service.get(enemy_info["image"])
+    num_frames = enemy_info["animations"]["number_frames"]
+    original_size = enemy_surface.get_size()
+    frame_width = original_size[0] // num_frames
+    frame_height = original_size[1]
+    new_frame_width = frame_width * 2
+    new_frame_height = frame_height * 2
+    new_sheet_width = new_frame_width * num_frames
+    enemy_surface = pygame.transform.scale(enemy_surface, (new_sheet_width, new_frame_height))
+    
     # Asigna una velocidad aleatoria o fija
-    speed = enemy_info.get("velocity", 100)  # Usa un valor por defecto si no existe
+    speed = enemy_info.get("velocity", 100)
     angle = random.uniform(0, 2 * 3.14159)
     velocity = pygame.Vector2(speed, 0).rotate_rad(angle)
     enemy_entity = create_sprite(world, pos, velocity, enemy_surface)
@@ -74,8 +83,19 @@ def create_enemy(world: esper.World, pos: pygame.Vector2, enemy_info: dict):
 
 def create_player_square(world: esper.World, player_info: dict, player_lvl_info: dict) -> int:
     player_sprite = ServiceLocator.images_service.get(player_info["image"])
-    size = player_sprite.get_size()
-    size = (size[0] / player_info["animations"]["number_frames"], size[1])
+    num_frames = player_info["animations"]["number_frames"]
+    # Obtener dimensiones del primer frame
+    original_size = player_sprite.get_size()
+    frame_width = original_size[0] // num_frames
+    frame_height = original_size[1]
+    # Calcular nuevo tamaño (doble del original)
+    new_frame_width = frame_width * 2
+    new_frame_height = frame_height * 2
+    new_sheet_width = new_frame_width * num_frames
+    # Escalar la hoja completa de sprites
+    player_sprite = pygame.transform.scale(player_sprite, (new_sheet_width, new_frame_height))
+    
+    size = (player_sprite.get_size()[0] / num_frames, player_sprite.get_size()[1])
     pos = pygame.Vector2(player_lvl_info["position"]["x"] - (size[0] / 2),
                          player_lvl_info["position"]["y"] - (size[1] / 2))
     vel = pygame.Vector2(0, 0)

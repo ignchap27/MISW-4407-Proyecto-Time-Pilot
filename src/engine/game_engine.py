@@ -13,6 +13,7 @@ from src.ecs.systems.s_enemy_spawner import system_enemy_spawner
 from src.ecs.systems.s_enemy_state import system_enemy_state
 from src.ecs.systems.s_input_player import system_input_player
 from src.ecs.systems.s_movement import system_movement
+from src.ecs.systems.s_object_movement import system_object_movement
 from src.ecs.systems.s_rendering import system_rendering
 from src.ecs.systems.s_screen_bounce import system_screen_bounce
 from src.ecs.systems.s_screen_player import system_screen_player
@@ -117,6 +118,13 @@ class GameEngine:
         self._clean()
 
     def _create(self):
+        # Determinar la posición de aparición del jugador (centro de la pantalla)
+        screen_center_x = self.window_cfg["size"]["w"] / 2
+        screen_center_y = self.window_cfg["size"]["h"] / 2
+
+        # Actualizar la posición en el config para que se use en reinicios y otros sistemas
+        self.level_01_cfg["player_spawn"]["position"] = {"x": screen_center_x, "y": screen_center_y}
+        
         self._player_entity = create_player_square(self.ecs_world, self.player_cfg, self.level_01_cfg["player_spawn"])
         self._player_c_v = self.ecs_world.component_for_entity(self._player_entity, CVelocity)
         self._player_c_t = self.ecs_world.component_for_entity(self._player_entity, CTransform)
@@ -144,7 +152,8 @@ class GameEngine:
             return
         
         system_enemy_spawner(self.ecs_world, self.enemies_cfg, self.delta_time)
-        system_movement(self.ecs_world, self.delta_time)
+        system_movement(self.ecs_world, self.delta_time, self._player_entity)
+        system_object_movement(self.ecs_world, self.delta_time, self._player_entity)
 
         system_screen_bounce(self.ecs_world, self.screen)
         system_screen_player(self.ecs_world, self.screen)
