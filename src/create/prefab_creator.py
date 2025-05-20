@@ -143,14 +143,14 @@ def create_bullet(world: esper.World,
                   player_pos: pygame.Vector2,
                   player_size: pygame.Vector2,
                   bullet_info: dict):
-    bullet_surface = ServiceLocator.images_service.get(bullet_info["image"])
-    bullet_size = bullet_surface.get_rect().size
+    bullet_size = pygame.Vector2(4, 4)
+    color = pygame.Color(255, 255, 255)
     pos = pygame.Vector2(player_pos.x + (player_size[0] / 2) - (bullet_size[0] / 2),
                          player_pos.y + (player_size[1] / 2) - (bullet_size[1] / 2))
     vel = (mouse_pos - player_pos)
     vel = vel.normalize() * bullet_info["velocity"]
 
-    bullet_entity = create_sprite(world, pos, vel, bullet_surface)
+    bullet_entity = create_square(world, bullet_size, pos, vel, color)
     world.add_component(bullet_entity, CTagBullet())
     ServiceLocator.sounds_service.play(bullet_info["sound"])
 
