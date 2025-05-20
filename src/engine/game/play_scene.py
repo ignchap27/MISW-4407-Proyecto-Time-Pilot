@@ -23,6 +23,7 @@ from src.ecs.systems.s_screen_bullet import system_screen_bullet
 from src.ecs.systems.s_screen_player import system_screen_player
 from src.ecs.systems.s_steering import system_steering
 from src.engine.scenes.scene import Scene
+from src.engine.service_locator import ServiceLocator
 
 
 class PlayScene(Scene):
@@ -116,4 +117,12 @@ class PlayScene(Scene):
         if c_input.name == "PLAYER_FIRE":
             create_bullet(self.ecs_world, c_input.mouse_pos, self._player_c_t.pos,
                           self._player_c_s.area.size, self.bullet_cfg)
- 
+            
+    def process_events(self, event):
+        # Manejar pausa (tecla P)
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
+            self.is_paused = not self.is_paused
+            ServiceLocator.sounds_service.play('assets/snd/game_paused.ogg')
+        if not self.is_paused:
+            super().process_events(event)
+    
