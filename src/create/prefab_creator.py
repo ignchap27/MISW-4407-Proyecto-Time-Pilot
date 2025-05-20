@@ -10,7 +10,7 @@ from src.ecs.components.c_surface import CSurface
 from src.ecs.components.c_transform import CTransform
 from src.ecs.components.c_velocity import CVelocity
 from src.ecs.components.tags.c_tag_enemy import CTagEnemy
-from src.ecs.components.tags.c_tag_file import CTagCloud
+from src.ecs.components.tags.c_tag_cloud import CTagCloud
 from src.ecs.components.tags.c_tag_player import CTagPlayer
 from src.ecs.components.tags.c_tag_bullet import CTagBullet
 from src.ecs.components.tags.c_tag_fireball import CTagFireball
@@ -77,6 +77,7 @@ def create_enemy(world: esper.World, pos: pygame.Vector2, enemy_info: dict):
 
     # Ajustar el área del sprite para mostrar solo el primer frame correctamente
     c_surf = world.component_for_entity(enemy_entity, CSurface)
+    c_surf.layer = 2
     if c_surf is not None and c_anim is not None and c_anim.number_frames > 0:
         sprite_sheet_width = c_surf.surf.get_width()
         frame_width = sprite_sheet_width / c_anim.number_frames
@@ -106,6 +107,7 @@ def create_player_square(world: esper.World, player_info: dict, player_lvl_info:
     
     # Ajustar manualmente el ancho del área del sprite antes de seguir
     c_surf = world.component_for_entity(player_entity, CSurface)
+    c_surf.layer = 2
     c_anim = CAnimation(player_info["animations"])
     world.add_component(player_entity, c_anim)
     
@@ -178,14 +180,19 @@ def create_cloud(world: esper.World,
                  vel: pygame.Vector2,
                  cloud_type: str,
                  cloud_info: dict):
+    size = None
     if cloud_type == "small":
         img_path = "assets/img/clouds_small.png"
+        size = "small"
     elif cloud_type == "medium_A":
         img_path = "assets/img/clouds_medium_A.png"
+        size = "medium"
     elif cloud_type == "medium_B":
         img_path = "assets/img/clouds_medium_B.png"
+        size = "medium"
     elif cloud_type == "large":
         img_path = "assets/img/clouds_large.png"
+        size = "large"
     
     cloud_surface = ServiceLocator.images_service.get(img_path)
     
@@ -202,7 +209,13 @@ def create_cloud(world: esper.World,
     cloud_surface = pygame.transform.scale(cloud_surface, (new_sheet_width, new_frame_height))
     
     cloud_entity = create_sprite(world, pos, vel, cloud_surface)
-    world.add_component(cloud_entity, CTagCloud())
+    world.add_component(cloud_entity, CTagCloud(size))
+    
+    layer_by_size = {"small": 0, "medium": 1, "large": 3}
+    c_surf = world.component_for_entity(cloud_entity, CSurface)
+    c_surf.layer = layer_by_size[size]
+
+    
     c_anim = CAnimation(cloud_info[cloud_type]["animations"])
     world.add_component(cloud_entity, c_anim)
 

@@ -1,31 +1,37 @@
-import pygame
-import esper
-
+# src/ecs/systems/s_cloud_behavior.py
+import pygame, esper
 from src.ecs.components.c_transform import CTransform
-from src.ecs.components.c_surface import CSurface
-from src.ecs.components.tags.c_tag_file import CTagCloud # CTagCloud está en c_tag_file.py
+from src.ecs.components.c_surface   import CSurface
+from src.ecs.components.c_velocity  import CVelocity
+from src.ecs.components.tags.c_tag_cloud import CTagCloud
 
 def system_cloud_behavior(world: esper.World, screen: pygame.Surface):
-    """
-    Maneja el comportamiento de las nubes, principalmente el "wrapping" en pantalla.
-    Si una nube sale por un lado de la pantalla, reaparece por el lado opuesto.
-    """
+    """Parallax de nubes: tamaño ↔ velocidad y wrapping de pantalla."""
     screen_rect = screen.get_rect()
-    
-    components = world.get_components(CTransform, CSurface, CTagCloud)
 
-    for entity, (c_t, c_s, _) in components:
-        cloud_width = c_s.surf.get_width()
-        cloud_height = c_s.surf.get_height()
+    for _, (c_t, c_s, c_v, c_cloud) in world.get_components(
+        CTransform, CSurface, CVelocity, CTagCloud
+    ):
+        if c_v.vel.length_squared() == 0:
+            base_speed = 10                         # px/seg para nubes medianas
+            size = c_cloud.get_size()
 
-        # Wrapping horizontal
-        if c_t.pos.x + cloud_width < 0:  # Se fue completamente por la izquierda
+            if size == "small":   speed = 1.0 * base_speed   # más lento
+            elif size == "medium": speed = 2.0 * base_speed  # velocidad media
+            elif size == "large":  speed = 3.5 * base_speed  # más rápido
+            else:                  speed = base_speed        # fallback
+
+            # Todas viajan de derecha a izquierda; ajusta a gusto
+            c_v.vel = pygame.Vector2(-speed, 0)
+
+        w, h = c_s.area.size
+
+        if c_t.pos.x + w < 0:          # salió por la izquierda
             c_t.pos.x = screen_rect.width
-        elif c_t.pos.x > screen_rect.width:  # Se fue completamente por la derecha
-            c_t.pos.x = -cloud_width
-        
-        # Wrapping vertical
-        if c_t.pos.y + cloud_height < 0:  # Se fue completamente por arriba
+        elif c_t.pos.x > screen_rect.width:
+            c_t.pos.x = -w
+
+        if c_t.pos.y + h < 0:          # salió por arriba
             c_t.pos.y = screen_rect.height
-        elif c_t.pos.y > screen_rect.height:  # Se fue completamente por abajo
-            c_t.pos.y = -cloud_height
+        elif c_t.pos.y > screen_rect.height:
+            c_t.pos.y = -h

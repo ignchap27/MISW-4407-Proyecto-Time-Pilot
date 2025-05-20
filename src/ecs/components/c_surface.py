@@ -1,10 +1,11 @@
 import pygame
 
 class CSurface:
-    def __init__(self, size:pygame.Vector2, color:pygame.Color) -> None:
+    def __init__(self, size:pygame.Vector2, color:pygame.Color, layer: int = 1) -> None:
         self.surf = pygame.Surface(size)
         self.surf.fill(color)
         self.area = self.surf.get_rect()
+        self.layer = layer
 
     @classmethod
     def from_surface(cls, surface:pygame.Surface):
