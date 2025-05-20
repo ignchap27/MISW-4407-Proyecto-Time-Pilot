@@ -32,6 +32,7 @@ from src.ecs.components.tags.c_tag_bullet import CTagBullet
 from src.ecs.components.c_input_command import CInputCommand, CommandPhase
 
 from src.create.prefab_creator import create_cloud, create_enemy_spawner, create_fireball, create_input_player, create_player_square, create_bullet
+from src.ecs.systems.s_steering import system_steering
 from src.engine.service_locator import ServiceLocator
 
 
@@ -121,13 +122,7 @@ class GameEngine:
         self._clean()
 
     def _create(self):
-        # Determinar la posición de aparición del jugador (centro de la pantalla)
-        screen_center_x = self.window_cfg["size"]["w"] / 2
-        screen_center_y = self.window_cfg["size"]["h"] / 2
 
-        # Actualizar la posición en el config para que se use en reinicios y otros sistemas
-        self.level_01_cfg["player_spawn"]["position"] = {"x": screen_center_x, "y": screen_center_y}
-        
         self._player_entity = create_player_square(self.ecs_world, self.player_cfg, self.level_01_cfg["player_spawn"])
         self._player_c_v = self.ecs_world.component_for_entity(self._player_entity, CVelocity)
         self._player_c_t = self.ecs_world.component_for_entity(self._player_entity, CTransform)
@@ -165,7 +160,7 @@ class GameEngine:
         system_movement(self.ecs_world, self.delta_time, self._player_entity)
         system_object_movement(self.ecs_world, self.delta_time, self._player_entity)
 
-        system_screen_bounce(self.ecs_world, self.screen)
+        # system_screen_bounce(self.ecs_world, self.screen)
         system_screen_player(self.ecs_world, self.screen)
         system_screen_bullet(self.ecs_world, self.screen)
         system_cloud_behavior(self.ecs_world, self.screen)
@@ -177,6 +172,7 @@ class GameEngine:
                                       self.level_01_cfg, self.explosion_cfg)
 
         system_explosion_kill(self.ecs_world)
+        system_steering(self.ecs_world, self.delta_time, self._player_entity)
 
         system_player_state(self.ecs_world, self.player_cfg)
         system_enemy_state(self.ecs_world)
@@ -231,7 +227,7 @@ class GameEngine:
             elif c_input.phase == CommandPhase.END:
                 self._player_c_v.vel.y -= self.player_cfg["input_velocity"]
 
-        if c_input.name == "PLAYER_FIRE" and self.num_bullets < self.level_01_cfg["player_spawn"]["max_bullets"]:
+        if c_input.name == "PLAYER_FIRE":
             create_bullet(self.ecs_world, c_input.mouse_pos, self._player_c_t.pos,
                           self._player_c_s.area.size, self.bullet_cfg)
         

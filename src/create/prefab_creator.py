@@ -5,6 +5,7 @@ import esper
 from src.ecs.components.c_enemy_spawner import CEnemySpawner
 from src.ecs.components.c_input_command import CInputCommand
 from src.ecs.components.c_special_charge import CSpecialCharge
+from src.ecs.components.c_steer import CSteer
 from src.ecs.components.c_surface import CSurface
 from src.ecs.components.c_transform import CTransform
 from src.ecs.components.c_velocity import CVelocity
@@ -72,6 +73,7 @@ def create_enemy(world: esper.World, pos: pygame.Vector2, enemy_info: dict):
     c_anim = CAnimation(enemy_info["animations"])
     world.add_component(enemy_entity, c_anim)
     world.add_component(enemy_entity, CTagEnemy("normal"))
+    world.add_component(enemy_entity, CSteer())
 
     # Ajustar el área del sprite para mostrar solo el primer frame correctamente
     c_surf = world.component_for_entity(enemy_entity, CSurface)

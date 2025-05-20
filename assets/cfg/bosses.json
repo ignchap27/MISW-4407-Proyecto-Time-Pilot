@@ -1,0 +1,72 @@
+{
+  "boss_01": {
+    "image": "assets/img/boss_01.png",
+    "animations": {
+      "number_frames": 2,
+      "list": [
+        {
+          "name": "ACTIVE",
+          "start": 0,
+          "end": 1,
+          "framerate": 5
+        }
+      ]
+    }
+  },
+  "boss_02": {
+    "image": "assets/img/boss_02.png",
+    "animations": {
+      "number_frames": 4,
+      "list": [
+        {
+          "name": "ACTIVE",
+          "start": 0,
+          "end": 3,
+          "framerate": 5
+        }
+      ]
+    }
+  },
+  "boss_03": {
+    "image": "assets/img/boss_03.png",
+    "animations": {
+      "number_frames": 6,
+      "list": [
+        {
+          "name": "PHASE_ONE",
+          "start": 0,
+          "end": 0,
+          "framerate": 1
+        }
+      ]
+    }
+  },
+  "boss_04": {
+    "image": "assets/img/boss_04.png",
+    "animations": {
+      "number_frames": 10,
+      "list": [
+        {
+          "name": "ACTIVE",
+          "start": 0,
+          "end": 9,
+          "framerate": 7
+        }
+      ]
+    }
+  },
+  "boss_05": {
+    "image": "assets/img/boss_05.png",
+    "animations": {
+      "number_frames": 4,
+      "list": [
+        {
+          "name": "ACTIVE",
+          "start": 0,
+          "end": 3,
+          "framerate": 5
+        }
+      ]
+    }
+  }
+}
