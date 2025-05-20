@@ -103,5 +103,27 @@
         "y": 260
       }
     }
+  ],
+  "cloud_spawn_events": [
+    { "cloud_type": "small", "position": { "x": 50, "y": 100 } },
+    { "cloud_type": "medium_A", "position": { "x": 150, "y": 50 } },
+    { "cloud_type": "large", "position": { "x": 250, "y": 75 } },
+    { "cloud_type": "small", "position": { "x": 350, "y": 150 } },
+    { "cloud_type": "medium_B", "position": { "x": 450, "y": 100 } },
+    { "cloud_type": "large", "position": { "x": 100, "y": 300 } },
+    { "cloud_type": "small", "position": { "x": 200, "y": 350 } },
+    { "cloud_type": "medium_A", "position": { "x": 300, "y": 400 } },
+    { "cloud_type": "large", "position": { "x": 400, "y": 300 } },
+    { "cloud_type": "small", "position": { "x": 80, "y": 200 } },
+    { "cloud_type": "medium_B", "position": { "x": 180, "y": 250 } },
+    { "cloud_type": "large", "position": { "x": 280, "y": 180 } },
+    { "cloud_type": "small", "position": { "x": 380, "y": 280 } },
+    { "cloud_type": "medium_A", "position": { "x": 480, "y": 220 } },
+    { "cloud_type": "large", "position": { "x": 120, "y": 420 } },
+    { "cloud_type": "small", "position": { "x": 220, "y": 20 } },
+    { "cloud_type": "medium_B", "position": { "x": 320, "y": 80 } },
+    { "cloud_type": "large", "position": { "x": 420, "y": 30 } },
+    { "cloud_type": "small", "position": { "x": 500, "y": 380 } },
+    { "cloud_type": "medium_A", "position": { "x": 20, "y": 320 } }
   ]
 }

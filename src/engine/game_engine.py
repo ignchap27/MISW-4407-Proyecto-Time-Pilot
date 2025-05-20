@@ -5,6 +5,7 @@ import esper
 
 from src.ecs.systems.s_animation import system_animation
 
+from src.ecs.systems.s_cloud_behavior import system_cloud_behavior
 from src.ecs.systems.s_collision_enemy_fireball import system_collision_enemy_fireball
 from src.ecs.systems.s_collision_player_enemy import system_collision_player_enemy
 from src.ecs.systems.s_collision_enemy_bullet import system_collision_enemy_bullet
@@ -30,7 +31,7 @@ from src.ecs.components.tags.c_tag_bullet import CTagBullet
 
 from src.ecs.components.c_input_command import CInputCommand, CommandPhase
 
-from src.create.prefab_creator import create_enemy_spawner, create_fireball, create_input_player, create_player_square, create_bullet
+from src.create.prefab_creator import create_cloud, create_enemy_spawner, create_fireball, create_input_player, create_player_square, create_bullet
 from src.engine.service_locator import ServiceLocator
 
 
@@ -100,6 +101,8 @@ class GameEngine:
             self.bullet_cfg = json.load(bullet_file)
         with open("assets/cfg/explosion.json", encoding="utf-8") as explosion_file:
             self.explosion_cfg = json.load(explosion_file)
+        with open("assets/cfg/clouds.json", encoding="utf-8") as clouds_file:
+            self.clouds_cfg = json.load(clouds_file)
         #with open("dist/assets/cfg/fireball.json", encoding="utf-8") as fireball_file:
         #    self.fireball_cfg = json.load(fireball_file)
         with open("assets/cfg/interface.json", "r") as file:
@@ -134,6 +137,13 @@ class GameEngine:
         create_enemy_spawner(self.ecs_world, self.level_01_cfg)
         create_input_player(self.ecs_world)
 
+        for cloud_event in self.level_01_cfg["cloud_spawn_events"]:
+            pos = pygame.Vector2(cloud_event["position"]["x"], cloud_event["position"]["y"])
+            # Las nubes de fondo generalmente no se mueven o se mueven muy lentamente.
+            # Aquí se establece una velocidad cero. Ajusta si es necesario.
+            vel = pygame.Vector2(0, 0) 
+            create_cloud(self.ecs_world, pos, vel, cloud_event["cloud_type"], self.clouds_cfg)
+
     def _calculate_time(self):
         self.clock.tick(self.framerate)
         self.delta_time = self.clock.get_time() / 1000.0
@@ -158,6 +168,8 @@ class GameEngine:
         system_screen_bounce(self.ecs_world, self.screen)
         system_screen_player(self.ecs_world, self.screen)
         system_screen_bullet(self.ecs_world, self.screen)
+        system_cloud_behavior(self.ecs_world, self.screen)
+
 
         system_collision_enemy_bullet(self.ecs_world, self._player_s_c, self.explosion_cfg)
         system_collision_enemy_fireball(self.ecs_world, self._player_s_c, self.explosion_cfg)
@@ -168,9 +180,6 @@ class GameEngine:
 
         system_player_state(self.ecs_world, self.player_cfg)
         system_enemy_state(self.ecs_world)
-
-
-
 
         system_animation(self.ecs_world, self.delta_time)
 
@@ -187,11 +196,11 @@ class GameEngine:
 
             self.title_font.render_to(self.screen, (x, y), "Paused Game", (255, 0, 0))
         else:
-            self.title_font.render_to(self.screen, (10, 10), self.text_title, self.text_title_color)
-            self.font.render_to(self.screen, (10, 50), self.text_subtitle, self.text_subtitle_color)
+            # self.title_font.render_to(self.screen, (10, 10), self.text_title, self.text_title_color)
+            # self.font.render_to(self.screen, (10, 50), self.text_subtitle, self.text_subtitle_color)
 
-            charge_text = f"Special Charge: {self._player_s_c.get_charge()}"
-            self.font.render_to(self.screen, (10, 90), charge_text, (0, 255, 0))
+            # charge_text = f"Special Charge: {self._player_s_c.get_charge()}"
+            # self.font.render_to(self.screen, (10, 90), charge_text, (0, 255, 0))
 
             system_rendering(self.ecs_world, self.screen)
         pygame.display.flip()

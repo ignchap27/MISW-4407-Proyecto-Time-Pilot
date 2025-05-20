@@ -9,6 +9,7 @@ from src.ecs.components.c_surface import CSurface
 from src.ecs.components.c_transform import CTransform
 from src.ecs.components.c_velocity import CVelocity
 from src.ecs.components.tags.c_tag_enemy import CTagEnemy
+from src.ecs.components.tags.c_tag_file import CTagCloud
 from src.ecs.components.tags.c_tag_player import CTagPlayer
 from src.ecs.components.tags.c_tag_bullet import CTagBullet
 from src.ecs.components.tags.c_tag_fireball import CTagFireball
@@ -152,6 +153,27 @@ def create_bullet(world: esper.World,
     bullet_entity = create_sprite(world, pos, vel, bullet_surface)
     world.add_component(bullet_entity, CTagBullet())
     ServiceLocator.sounds_service.play(bullet_info["sound"])
+
+def create_cloud(world: esper.World,
+                 pos: pygame.Vector2, 
+                 vel: pygame.Vector2,
+                 cloud_type: str,
+                 cloud_info: dict):
+    if cloud_type == "small":
+        img_path = "assets/img/clouds_small.png"
+    elif cloud_type == "medium_A":
+        img_path = "assets/img/clouds_medium_A.png"
+    elif cloud_type == "medium_B":
+        img_path = "assets/img/clouds_medium_B.png"
+    elif cloud_type == "large":
+        img_path = "assets/img/clouds_large.png"
+    
+    cloud_surface = ServiceLocator.images_service.get(img_path)
+    
+    cloud_entity = create_sprite(world, pos, vel, cloud_surface)
+    world.add_component(cloud_entity, CTagCloud())
+    world.add_component(cloud_entity,
+                        CAnimation(cloud_info[cloud_type]["animations"]))
 
 def create_fireball(world: esper.World,
                   direction: pygame.Vector2,

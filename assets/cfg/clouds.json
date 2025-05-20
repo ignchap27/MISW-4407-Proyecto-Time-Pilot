@@ -1,0 +1,58 @@
+{
+  "small": {
+    "image": "assets/img/clouds_small.png",
+    "animations": {
+      "number_frames": 4,
+      "list": [
+        {
+          "name": "FLOAT",
+          "start": 0,
+          "end": 3,
+          "framerate": 5
+        }
+      ]
+    }
+  },
+  "medium_A": {
+    "image": "assets/img/clouds_medium_A.png",
+    "animations": {
+      "number_frames": 4,
+      "list": [
+        {
+          "name": "FLOAT",
+          "start": 0,
+          "end": 3,
+          "framerate": 5
+        }
+      ]
+    }
+  },
+  "medium_B": {
+    "image": "assets/img/clouds_medium_B.png",
+    "animations": {
+      "number_frames": 4,
+      "list": [
+        {
+          "name": "FLOAT",
+          "start": 0,
+          "end": 3,
+          "framerate": 5
+        }
+      ]
+    }
+  },
+  "large": {
+    "image": "assets/img/clouds_large.png",
+    "animations": {
+      "number_frames": 4,
+      "list": [
+        {
+          "name": "FLOAT",
+          "start": 0,
+          "end": 3,
+          "framerate": 5
+        }
+      ]
+    }
+  }
+}
