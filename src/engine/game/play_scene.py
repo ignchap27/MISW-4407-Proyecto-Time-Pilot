@@ -2,6 +2,7 @@ import json
 
 import pygame
 from src.create.prefab_creator import create_bullet, create_cloud, create_enemy_spawner, create_input_player, create_player_square
+from src.create.prefab_creator_interface import create_text
 from src.ecs.components.c_input_command import CInputCommand, CommandPhase
 from src.ecs.components.c_special_charge import CSpecialCharge
 from src.ecs.components.c_surface import CSurface
@@ -62,7 +63,7 @@ class PlayScene(Scene):
             pos = pygame.Vector2(cloud_event["position"]["x"], cloud_event["position"]["y"])
             vel = pygame.Vector2(0, 0) 
             create_cloud(self.ecs_world, pos, vel, cloud_event["cloud_type"], self.clouds_cfg)
-            
+
     def do_update(self, delta_time:float, screen):
         if self.is_paused:
             return
