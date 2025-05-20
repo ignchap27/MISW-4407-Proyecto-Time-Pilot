@@ -13,6 +13,17 @@ def system_animation(world:esper.World, delta_time:float):
             c_s.area.w = rect_surf.w / c_a.number_frames
             # Establecer la posición X según el frame actual
             c_s.area.x = c_s.area.w * c_a.curr_frame
+
+        # Obtener la animación actual
+        anim = c_a.animations_list[c_a.curr_anim]
+        if anim is None:
+            continue
+
+        # Evitar animar si start == end (frame fijo por dirección)
+        if anim.start == anim.end:
+            c_a.curr_frame = anim.start
+            c_s.area.x = c_s.area.w * c_a.curr_frame
+            continue
         
         # Disminuir el valor de curr_time de la animación
         c_a.curr_anim_time -= delta_time
