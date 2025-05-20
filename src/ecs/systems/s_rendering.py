@@ -14,4 +14,3 @@ def system_rendering(world:esper.World, screen:pygame.Surface):
         screen.blit(c_s.surf, c_t.pos, area=c_s.area)
         debug_area = c_s.area.copy()
         debug_area.topleft = c_t.pos.copy()
-        #pygame.draw.rect(screen, pygame.Color(255,255,255), debug_area, 1)

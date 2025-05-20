@@ -33,6 +33,9 @@ from src.ecs.components.c_input_command import CInputCommand, CommandPhase
 
 from src.create.prefab_creator import create_cloud, create_enemy_spawner, create_fireball, create_input_player, create_player_square, create_bullet
 from src.ecs.systems.s_steering import system_steering
+from src.engine.game.menu_scene import MenuScene
+from src.engine.game.play_scene import PlayScene
+from src.engine.scenes.scene import Scene
 from src.engine.service_locator import ServiceLocator
 
 
@@ -55,38 +58,11 @@ class GameEngine:
                                      self.window_cfg["bg_color"]["b"])
         self.ecs_world = esper.World()
 
-        self.num_bullets = 0
-        self.special_charge = 0
-
-        #font_path = self.interface_config["font_path"]
-        
-        font_path = "assets/fnt/PressStart2P.ttf"
-        
-        #text_title_size = self.interface_config["text_title_size"]
-        text_title_size = 40
-
-        #text_size = self.interface_config["text_size"]
-
-        text_size = 20
-
-
-        self.title_font = ServiceLocator.fonts_service.get(font_path, text_title_size)
-        self.font = ServiceLocator.fonts_service.get(font_path, text_size)
-        #self.text_title = self.interface_config["text_title"]
-        self.text_title = "Time Pilot"
-
-        #self.text_subtitle = self.interface_config["text_subtitle"]
-
-        self.text_subtitle = "Please deposit coin"
-        
-        color_data = self.interface_config["title_text_color"]
-        self.text_title_color = (color_data["r"], color_data["g"], color_data["b"])
-
-        print(self.text_title_color)
-        color_data = self.interface_config["normal_text_color"]
-        self.text_subtitle_color = (color_data["r"], color_data["g"], color_data["b"])
-
-
+        self._scenes:dict[str, Scene] = {}
+        self._scenes["MENU_SCENE"] = MenuScene(self)
+        self._scenes["LEVEL_01"] = PlayScene(self)
+        self._current_scene:Scene = None
+        self._scene_name_to_switch:str = None
         self.is_paused = False
 
     def _load_config_files(self):
@@ -104,40 +80,28 @@ class GameEngine:
             self.explosion_cfg = json.load(explosion_file)
         with open("assets/cfg/clouds.json", encoding="utf-8") as clouds_file:
             self.clouds_cfg = json.load(clouds_file)
-        #with open("dist/assets/cfg/fireball.json", encoding="utf-8") as fireball_file:
-        #    self.fireball_cfg = json.load(fireball_file)
         with open("assets/cfg/interface.json", "r") as file:
             self.interface_config = json.load(file)
 
 
-    async def run(self) -> None:
-        self._create()
+    async def run(self, start_scene_name) -> None:
         self.is_running = True
+        self._current_scene = self._scenes[start_scene_name]
+        self._create()
         while self.is_running:
             self._calculate_time()
             self._process_events()
             self._update()
             self._draw()
+            self._handle_switch_scene()
             await asyncio.sleep(0)
         self._clean()
+        
+    def switch_scene(self, new_scene_name):
+        self._scene_name_to_switch = new_scene_name
 
     def _create(self):
-
-        self._player_entity = create_player_square(self.ecs_world, self.player_cfg, self.level_01_cfg["player_spawn"])
-        self._player_c_v = self.ecs_world.component_for_entity(self._player_entity, CVelocity)
-        self._player_c_t = self.ecs_world.component_for_entity(self._player_entity, CTransform)
-        self._player_c_s = self.ecs_world.component_for_entity(self._player_entity, CSurface)
-        self._player_s_c = self.ecs_world.component_for_entity(self._player_entity, CSpecialCharge)
-
-        create_enemy_spawner(self.ecs_world, self.level_01_cfg)
-        create_input_player(self.ecs_world)
-
-        for cloud_event in self.level_01_cfg["cloud_spawn_events"]:
-            pos = pygame.Vector2(cloud_event["position"]["x"], cloud_event["position"]["y"])
-            # Las nubes de fondo generalmente no se mueven o se mueven muy lentamente.
-            # Aquí se establece una velocidad cero. Ajusta si es necesario.
-            vel = pygame.Vector2(0, 0) 
-            create_cloud(self.ecs_world, pos, vel, cloud_event["cloud_type"], self.clouds_cfg)
+        self._current_scene.do_create()
 
     def _calculate_time(self):
         self.clock.tick(self.framerate)
@@ -145,60 +109,23 @@ class GameEngine:
 
     def _process_events(self):
         for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
-                self.is_paused = not self.is_paused
-            if not self.is_paused:
-                system_input_player(self.ecs_world, event, self._do_action)
+            self._current_scene.process_events(event)
             if event.type == pygame.QUIT:
                 self.is_running = False
 
+    def _handle_switch_scene(self):
+        if self._scene_name_to_switch is not None:
+            self._current_scene.clean()
+            self._current_scene = self._scenes[self._scene_name_to_switch]
+            self._current_scene.do_create()
+            self._scene_name_to_switch = None
+
     def _update(self):
-        if self.is_paused:
-            return
-        
-        system_enemy_spawner(self.ecs_world, self.enemies_cfg, self.delta_time)
-        system_movement(self.ecs_world, self.delta_time, self._player_entity)
-        system_object_movement(self.ecs_world, self.delta_time, self._player_entity)
-
-        # system_screen_bounce(self.ecs_world, self.screen)
-        system_screen_player(self.ecs_world, self.screen)
-        system_screen_bullet(self.ecs_world, self.screen)
-        system_cloud_behavior(self.ecs_world, self.screen)
-
-
-        system_collision_enemy_bullet(self.ecs_world, self._player_s_c, self.explosion_cfg)
-        system_collision_enemy_fireball(self.ecs_world, self._player_s_c, self.explosion_cfg)
-        system_collision_player_enemy(self.ecs_world, self._player_entity,
-                                      self.level_01_cfg, self.explosion_cfg)
-
-        system_explosion_kill(self.ecs_world)
-        system_steering(self.ecs_world, self.delta_time, self._player_entity)
-
-        system_player_state(self.ecs_world, self.player_cfg)
-        system_enemy_state(self.ecs_world)
-
-        system_animation(self.ecs_world, self.delta_time)
-
-        self.ecs_world._clear_dead_entities()
-        self.num_bullets = len(self.ecs_world.get_component(CTagBullet))
+        self._current_scene.simulate(self.delta_time, self.screen)
 
     def _draw(self):
         self.screen.fill(self.bg_color)
-        if self.is_paused:
-            text_rect = self.title_font.get_rect("Paused Game")
-
-            x = (self.screen.get_width() - text_rect.width) // 2
-            y = (self.screen.get_height() - text_rect.height) // 2
-
-            self.title_font.render_to(self.screen, (x, y), "Paused Game", (255, 0, 0))
-        else:
-            # self.title_font.render_to(self.screen, (10, 10), self.text_title, self.text_title_color)
-            # self.font.render_to(self.screen, (10, 50), self.text_subtitle, self.text_subtitle_color)
-
-            # charge_text = f"Special Charge: {self._player_s_c.get_charge()}"
-            # self.font.render_to(self.screen, (10, 90), charge_text, (0, 255, 0))
-
-            system_rendering(self.ecs_world, self.screen)
+        self._current_scene.do_draw(self.screen)
         pygame.display.flip()
 
     def _clean(self):
@@ -206,46 +133,4 @@ class GameEngine:
         pygame.quit()
         
     def _do_action(self, c_input: CInputCommand):
-        if c_input.name == "PLAYER_LEFT":
-            if c_input.phase == CommandPhase.START:
-                self._player_c_v.vel.x -= self.player_cfg["input_velocity"]
-            elif c_input.phase == CommandPhase.END:
-                self._player_c_v.vel.x += self.player_cfg["input_velocity"]
-        if c_input.name == "PLAYER_RIGHT":
-            if c_input.phase == CommandPhase.START:
-                self._player_c_v.vel.x += self.player_cfg["input_velocity"]
-            elif c_input.phase == CommandPhase.END:
-                self._player_c_v.vel.x -= self.player_cfg["input_velocity"]
-        if c_input.name == "PLAYER_UP":
-            if c_input.phase == CommandPhase.START:
-                self._player_c_v.vel.y -= self.player_cfg["input_velocity"]
-            elif c_input.phase == CommandPhase.END:
-                self._player_c_v.vel.y += self.player_cfg["input_velocity"]
-        if c_input.name == "PLAYER_DOWN":
-            if c_input.phase == CommandPhase.START:
-                self._player_c_v.vel.y += self.player_cfg["input_velocity"]
-            elif c_input.phase == CommandPhase.END:
-                self._player_c_v.vel.y -= self.player_cfg["input_velocity"]
-
-        if c_input.name == "PLAYER_FIRE":
-            create_bullet(self.ecs_world, c_input.mouse_pos, self._player_c_t.pos,
-                          self._player_c_s.area.size, self.bullet_cfg)
-        
-        if c_input.name == "SPECIAL_ATTACK" and self._player_s_c.is_fully_charged():
-            directions = [
-                (0, -1),  # Arriba
-                (0, 1),   # Abajo
-                (-1, -1), # Arriba Izquierda
-                (-1, 1),  # Abajo Izquierda
-                (1, -1),  # Arriba Derecha
-                (1, 1),   # Abajo Derecha
-                (-1, 0),  # Izquierda
-                (1, 0)    # Derecha
-            ]
-
-
-            for dx, dy in directions:
-                create_fireball(self.ecs_world, (self._player_c_t.pos.x + dx, self._player_c_t.pos.y + dy),
-                            self._player_c_t.pos, self._player_c_s.area.size, self.fireball_cfg)
-            
-            self._player_s_c.reset_charge()
+        self._current_scene.do_action(c_input)

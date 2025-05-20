@@ -103,11 +103,28 @@ def create_player_square(world: esper.World, player_info: dict, player_lvl_info:
                          player_lvl_info["position"]["y"] - (size[1] / 2))
     vel = pygame.Vector2(0, 0)
     player_entity = create_sprite(world, pos, vel, player_sprite)
+    
+    # Ajustar manualmente el ancho del área del sprite antes de seguir
+    c_surf = world.component_for_entity(player_entity, CSurface)
+    c_anim = CAnimation(player_info["animations"])
+    world.add_component(player_entity, c_anim)
+    
+    # Inicializar correctamente el área del sprite
+    sprite_sheet_width = c_surf.surf.get_width()
+    frame_width = sprite_sheet_width / c_anim.number_frames
+    c_surf.area.width = int(frame_width)
+    c_surf.area.x = int(frame_width * c_anim.curr_frame)
+    
+    # Reposicionar el jugador ahora que conocemos el ancho real
+    c_transform = world.component_for_entity(player_entity, CTransform)
+    c_transform.pos.x = player_lvl_info["position"]["x"] - (c_surf.area.width / 2)
+    c_transform.pos.y = player_lvl_info["position"]["y"] - (c_surf.area.height / 2)
+    
+    # Añadir el resto de componentes
     world.add_component(player_entity, CTagPlayer())
-    world.add_component(player_entity,
-                        CAnimation(player_info["animations"]))
     world.add_component(player_entity, CPlayerState())
     world.add_component(player_entity, CSpecialCharge())
+    
     return player_entity
 
 
@@ -172,10 +189,22 @@ def create_cloud(world: esper.World,
     
     cloud_surface = ServiceLocator.images_service.get(img_path)
     
+    num_frames = cloud_info[cloud_type]["animations"]["number_frames"]
+    original_size = cloud_surface.get_size()
+    frame_width = original_size[0] // num_frames
+    frame_height = original_size[1]
+    
+    new_frame_width = frame_width * 2
+    new_frame_height = frame_height * 2
+    new_sheet_width = new_frame_width * num_frames
+    
+    # Escalar la hoja completa de sprites
+    cloud_surface = pygame.transform.scale(cloud_surface, (new_sheet_width, new_frame_height))
+    
     cloud_entity = create_sprite(world, pos, vel, cloud_surface)
     world.add_component(cloud_entity, CTagCloud())
-    world.add_component(cloud_entity,
-                        CAnimation(cloud_info[cloud_type]["animations"]))
+    c_anim = CAnimation(cloud_info[cloud_type]["animations"])
+    world.add_component(cloud_entity, c_anim)
 
 def create_fireball(world: esper.World,
                   direction: pygame.Vector2,
