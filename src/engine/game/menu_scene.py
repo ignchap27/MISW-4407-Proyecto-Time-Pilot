@@ -35,14 +35,17 @@ class MenuScene(Scene):
         self.ecs_world.add_component(logo_entity, CSurface.from_surface(logo_surface))
         
         # Textos del menú
-        create_text(self.ecs_world, "PRESS Z TO START", 20,
+        create_text(self.ecs_world, "- PRESS Z TO START -", 20,
                     pygame.Color(255, 255, 255), pygame.Vector2(250, 300), 'center')
         
-        create_text(self.ecs_world, "ARROW TO MOVE", 16,
+        create_text(self.ecs_world, "- ARROW TO MOVE -", 16,
                     pygame.Color(255, 255, 255), pygame.Vector2(250, 350), 'center')
         
-        create_text(self.ecs_world, "MOUSE TO SHOOT", 16,
+        create_text(self.ecs_world, "- MOUSE TO SHOOT -", 16,
                     pygame.Color(255, 255, 255), pygame.Vector2(250, 400), 'center')
+        
+        create_text(self.ecs_world, "- P TO PAUSE -", 16,
+                    pygame.Color(255, 255, 255), pygame.Vector2(250, 450), 'center')
         
         start_game_action = self.ecs_world.create_entity()
         self.ecs_world.add_component(start_game_action,
