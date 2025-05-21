@@ -1,20 +1,37 @@
-{ "explosion": "assets/img/explosion_large_bosses_player.png",
-  "boss_01": {
-    "image": "assets/img/boss_01.png",
+{ 
+  "explosion": {
+    "sound" : "assets/snd/player_die.ogg",
+    "image":"assets/img/explosion_large_bosses_player.png",
     "animations": {
-      "number_frames": 2,
+      "number_frames": 4,
+      "list": [
+        {
+          "name": "EXPLODE",
+          "start": 0,
+          "end": 3,
+          "framerate": 5
+        }
+      ]
+    }
+} ,
+  "boss_01": {
+    "image": "assets/img/boss_level_01.png",
+    "health": 20,
+    "animations": {
+      "number_frames": 4,
       "list": [
         {
           "name": "ACTIVE",
           "start": 0,
-          "end": 1,
+          "end": 3,
           "framerate": 5
         }
       ]
     }
   },
   "boss_02": {
-    "image": "assets/img/boss_02.png",
+    "image": "assets/img/boss_level_02.png",
+    "health": 20,
     "animations": {
       "number_frames": 4,
       "list": [
@@ -28,35 +45,38 @@
     }
   },
   "boss_03": {
-    "image": "assets/img/boss_03.png",
+    "image": "assets/img/boss_level_03.png",
+    "health": 20,
     "animations": {
-      "number_frames": 6,
+      "number_frames": 4,
       "list": [
         {
-          "name": "PHASE_ONE",
+          "name": "ACTIVE",
           "start": 0,
-          "end": 0,
-          "framerate": 1
+          "end": 3,
+          "framerate": 5
         }
       ]
     }
   },
   "boss_04": {
-    "image": "assets/img/boss_04.png",
+    "image": "assets/img/boss_level_04.png",
+    "health": 20,
     "animations": {
-      "number_frames": 10,
+      "number_frames": 4,
       "list": [
         {
           "name": "ACTIVE",
           "start": 0,
-          "end": 9,
-          "framerate": 7
+          "end": 3,
+          "framerate": 5
         }
       ]
     }
   },
   "boss_05": {
-    "image": "assets/img/boss_05.png",
+    "image": "assets/img/boss_level_05.png",
+    "health": 20,
     "animations": {
       "number_frames": 4,
       "list": [

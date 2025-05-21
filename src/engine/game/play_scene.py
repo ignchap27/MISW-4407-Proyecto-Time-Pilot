@@ -3,6 +3,7 @@ import json
 import pygame
 from src.create.prefab_creator import create_bullet, create_cloud, create_enemy_spawner, create_input_player, create_player_square, create_square
 from src.create.prefab_creator_interface import create_icon, create_space, create_text
+from src.ecs.components.c_boss_health import CBossHealth
 from src.ecs.components.c_input_command import CInputCommand, CommandPhase
 from src.ecs.components.c_player_lives import CPlayerLives
 from src.ecs.components.c_player_score import CPlayerScore
@@ -11,9 +12,11 @@ from src.ecs.components.c_special_charge import CSpecialCharge
 from src.ecs.components.c_surface import CSurface
 from src.ecs.components.c_transform import CTransform
 from src.ecs.components.c_velocity import CVelocity
+from src.ecs.components.tags.c_tag_boss import CTagBoss
 from src.ecs.components.tags.c_tag_bullet import CTagBullet
 from src.ecs.components.tags.c_tag_cloud import CTagCloud
 from src.ecs.systems.s_animation import system_animation
+from src.ecs.systems.s_boss_respawn import system_boss_respawn
 from src.ecs.systems.s_cloud_behavior import system_cloud_behavior
 from src.ecs.systems.s_collision_enemy_bullet import system_collision_enemy_bullet
 from src.ecs.systems.s_collision_enemy_fireball import system_collision_enemy_fireball
@@ -39,6 +42,8 @@ class PlayScene(Scene):
             self.window_cfg = json.load(window_file)
         with open("assets/cfg/enemies.json", encoding="utf-8") as enemies_file:
             self.enemies_cfg = json.load(enemies_file)
+        with open("assets/cfg/bosses.json", encoding="utf-8") as bosses_file:
+            self.bosses_cfg = json.load(bosses_file)
         with open("assets/cfg/level_01.json", encoding="utf-8") as level_01_file:
             self.level_cfg = json.load(level_01_file)
         with open("assets/cfg/player.json", encoding="utf-8") as player_file:
@@ -53,10 +58,13 @@ class PlayScene(Scene):
             self.interface_config = json.load(file)
             
         self.is_paused = False
-        self.num_killed_enemies = 0
-        self.score = 0
         self.target_scene_over = "GAME_OVER"
+        self.target_scene_passed = "PASSED_LEVEL"
         self.game_over = False
+        self.boss_spawned_in_level = False
+        self.boss_defeated_this_level = False
+        self.level_clear_timer = 0.0
+        self.level_clear_delay = 2.0  # 2 segundos de espera
         
         full_sheet = ServiceLocator.images_service.get('assets/img/player.png')
         n_frames   = self.player_cfg["animations"]["number_frames"]
@@ -72,6 +80,9 @@ class PlayScene(Scene):
         
     def do_create(self):
         self.game_over = False
+        self.boss_spawned_in_level = False
+        self.boss_defeated_this_level = False
+        self.level_clear_timer = 0.0
         
         self.ecs_world.clear_database()
 
@@ -105,24 +116,23 @@ class PlayScene(Scene):
         if self.game_over:
             self.in_transition = True
             self.elapsed_time = 0
-            self.transition_duration = 3.0  # segundos antes de cambiar de escena
-            # Reproducir sonido de game over si existe
+            self.transition_duration = 3.0
             ServiceLocator.sounds_service.play('assets/snd/game_over.ogg')
             self.switch_scene(self.target_scene_over)  # Usamos la variable ya definida
             
             return
             
-        system_enemy_spawner(self.ecs_world, self.enemies_cfg,delta_time)
+        system_enemy_spawner(self.ecs_world, self.enemies_cfg, delta_time, self.bosses_cfg, self.level_cfg)
         system_movement(self.ecs_world, delta_time, self._player_entity)
         system_object_movement(self.ecs_world, delta_time, self._player_entity)
 
         system_screen_player(self.ecs_world, screen)
         system_screen_bullet(self.ecs_world, screen)
         system_cloud_behavior(self.ecs_world, screen)
+        system_boss_respawn(self.ecs_world, screen, self.level_cfg)
 
 
-        system_collision_enemy_bullet(self.ecs_world, self._player_s_c, self.explosion_cfg)
-        system_collision_enemy_fireball(self.ecs_world, self._player_s_c, self.explosion_cfg)
+        system_collision_enemy_bullet(self.ecs_world, self.explosion_cfg, self.bosses_cfg["explosion"])
         system_collision_player_enemy(self.ecs_world, self._player_entity,
                                       self.level_cfg, self.explosion_cfg)
 
@@ -133,6 +143,17 @@ class PlayScene(Scene):
         system_enemy_state(self.ecs_world)
 
         system_animation(self.ecs_world, delta_time)
+        
+        boss_entities = self.ecs_world.get_components(CTagBoss, CBossHealth)# Obtener jefes
+        for _, (c_tb, c_h) in boss_entities:
+            if c_h.is_defeated:
+                self.boss_defeated_this_level = True
+                
+        if self.boss_defeated_this_level:
+            self.level_clear_timer += delta_time
+            if self.level_clear_timer >= self.level_clear_delay:
+                self.switch_scene(self.target_scene_passed)
+                return # Cambia de escena y no procesa nada más
 
         self.ecs_world._clear_dead_entities()
         self.num_bullets = len(self.ecs_world.get_component(CTagBullet))

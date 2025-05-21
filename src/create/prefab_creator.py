@@ -2,6 +2,7 @@ import random
 import pygame
 import esper
 
+from src.ecs.components.c_boss_health import CBossHealth
 from src.ecs.components.c_enemy_spawner import CEnemySpawner
 from src.ecs.components.c_input_command import CInputCommand
 from src.ecs.components.c_special_charge import CSpecialCharge
@@ -9,6 +10,7 @@ from src.ecs.components.c_steer import CSteer
 from src.ecs.components.c_surface import CSurface
 from src.ecs.components.c_transform import CTransform
 from src.ecs.components.c_velocity import CVelocity
+from src.ecs.components.tags.c_tag_boss import CTagBoss
 from src.ecs.components.tags.c_tag_enemy import CTagEnemy
 from src.ecs.components.tags.c_tag_cloud import CTagCloud
 from src.ecs.components.tags.c_tag_player import CTagPlayer
@@ -75,6 +77,51 @@ def create_enemy(world: esper.World, pos: pygame.Vector2, enemy_info: dict):
         frame_width = sprite_sheet_width / c_anim.number_frames
         c_surf.area.width = int(frame_width)
         c_surf.area.x = int(frame_width * c_anim.curr_frame)
+        
+def create_boss(world: esper.World, pos: pygame.Vector2, boss_info: dict) -> int:
+    enemy_surface = ServiceLocator.images_service.get(boss_info["image"])
+    num_frames = boss_info["animations"]["number_frames"]
+    original_size = enemy_surface.get_size()
+    frame_width = original_size[0] // num_frames
+    frame_height = original_size[1]
+    new_frame_width = frame_width * 2
+    new_frame_height = frame_height * 2
+    new_sheet_width = new_frame_width * num_frames
+    
+    # Escalar la hoja completa de sprites para que sea el doble de grande
+    enemy_surface = pygame.transform.scale(enemy_surface, (new_sheet_width, new_frame_height))
+    
+    # Velocidad horizontal de derecha a izquierda (negativa en x)
+    boss_speed = 40  # Más lento que los enemigos normales
+    velocity = pygame.Vector2(-boss_speed, 0)  # Solo movimiento horizontal
+    
+    # Crear la entidad del jefe
+    boss_entity = create_sprite(world, pos, velocity, enemy_surface)
+    
+    # Añadir el componente de animación primero
+    c_anim = CAnimation(boss_info["animations"])
+    world.add_component(boss_entity, c_anim)
+    
+    # Etiqueta de jefe
+    world.add_component(boss_entity, CTagBoss())
+    
+    
+    world.add_component(boss_entity, CBossHealth(boss_info["health"]))
+    
+    # Ajustar el área del sprite para mostrar correctamente el frame
+    c_surf = world.component_for_entity(boss_entity, CSurface)
+    c_surf.layer = 3  # Capa más alta que los enemigos normales
+    
+    # Configurar correctamente el área del sprite para este frame
+    if c_surf is not None and num_frames > 0:
+        # Importante: usar el ancho total del sprite escalado dividido por el número de frames
+        frame_width = c_surf.surf.get_width() // num_frames
+        # Establecer el ancho del área visible al ancho de un solo frame
+        c_surf.area.width = frame_width
+        # Empezar con el primer frame (índice 0)
+        c_surf.area.x = 0
+    
+    return boss_entity
 
 
 def create_player_square(world: esper.World, player_info: dict, player_lvl_info: dict) -> int:
@@ -228,6 +275,16 @@ def create_fireball(world: esper.World,
     ServiceLocator.sounds_service.play(fireball_info["sound"])
                     
 def create_explosion(world: esper.World, pos: pygame.Vector2, explosion_info: dict):
+    explosion_surface = ServiceLocator.images_service.get(explosion_info["image"])
+    vel = pygame.Vector2(0, 0)
+
+    explosion_entity = create_sprite(world, pos, vel, explosion_surface)
+    world.add_component(explosion_entity, CTagExplosion())
+    world.add_component(explosion_entity,
+                        CAnimation(explosion_info["animations"]))
+    ServiceLocator.sounds_service.play(explosion_info["sound"])
+
+def create_boss_explosion(world: esper.World, pos: pygame.Vector2, explosion_info: dict):
     explosion_surface = ServiceLocator.images_service.get(explosion_info["image"])
     vel = pygame.Vector2(0, 0)
 

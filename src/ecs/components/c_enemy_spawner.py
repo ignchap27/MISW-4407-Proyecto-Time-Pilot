@@ -12,6 +12,7 @@ class CEnemySpawner:
         self.time_since_last_spawn = 0
         self.spawn_interval = 1.0  # Segundos entre spawns
         self.enemy_type = level_data["enemy_type"] # Tipo de enemigo por defecto
+        self.is_active = True
 
 class SpawnEventData:
     def __init__(self, event_data: dict) -> None:

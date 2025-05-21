@@ -29,7 +29,8 @@
     { "cloud_type": "small", "position": { "x": 500, "y": 380 } },
     { "cloud_type": "medium_A", "position": { "x": 20, "y": 320 } }
   ],
-  "boss_01": {
+  "boss": {
+    "name": "boss_01",
     "position": {
       "x": 550,
       "y": 250

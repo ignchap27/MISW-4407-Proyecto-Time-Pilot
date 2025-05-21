@@ -35,6 +35,7 @@ from src.create.prefab_creator import create_cloud, create_enemy_spawner, create
 from src.ecs.systems.s_steering import system_steering
 from src.engine.game.game_over import GameOverScene
 from src.engine.game.menu_scene import MenuScene
+from src.engine.game.passed_level_scene import PassedLevelScene
 from src.engine.game.play_scene import PlayScene
 from src.engine.scenes.scene import Scene
 from src.engine.service_locator import ServiceLocator
@@ -63,6 +64,7 @@ class GameEngine:
         self._scenes["MENU_SCENE"] = MenuScene(self)
         self._scenes["LEVEL_01"] = PlayScene(self, "01")
         self._scenes["GAME_OVER"] = GameOverScene(self)
+        self._scenes["PASSED_LEVEL"] = PassedLevelScene(self)
         self._current_scene:Scene = None
         self._scene_name_to_switch:str = None
         self.is_paused = False
