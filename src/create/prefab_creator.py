@@ -17,11 +17,13 @@ from src.ecs.components.tags.c_tag_fireball import CTagFireball
 from src.ecs.components.tags.c_tag_explosion import CTagExplosion
 from src.ecs.components.c_animation import CAnimation
 from src.ecs.components.c_player_state import CPlayerState
+from src.ecs.components.tags.c_tag_ui import CTagUi
 from src.engine.service_locator import ServiceLocator
 
 
 def create_square(world: esper.World, size: pygame.Vector2,
-                  pos: pygame.Vector2, vel: pygame.Vector2, col: pygame.Color) -> int:
+                  pos: pygame.Vector2, vel: pygame.Vector2, 
+                  col: pygame.Color) -> int:
     cuad_entity = world.create_entity()
     world.add_component(cuad_entity,
                         CSurface(size, col))
@@ -42,16 +44,6 @@ def create_sprite(world: esper.World, pos: pygame.Vector2, vel: pygame.Vector2,
     world.add_component(sprite_entity,
                         CSurface.from_surface(surface))
     return sprite_entity
-
-
-# def create_enemy_square(world: esper.World, pos: pygame.Vector2, enemy_info: dict):
-#     enemy_surface = ServiceLocator.images_service.get(enemy_info["image"])
-#     vel = enemy_info["velocity_chase"]
-#     velocity = pygame.Vector2(random.choice([-vel, vel]), random.choice([-vel, vel]))
-
-#     enemy_entity = create_sprite(world, pos, velocity, enemy_surface)
-#     world.add_component(enemy_entity, CTagEnemy("Bouncer"))
-#     ServiceLocator.sounds_service.play(enemy_info["sound"])
 
 def create_enemy(world: esper.World, pos: pygame.Vector2, enemy_info: dict):
     enemy_surface = ServiceLocator.images_service.get(enemy_info["image"])
@@ -133,7 +125,7 @@ def create_player_square(world: esper.World, player_info: dict, player_lvl_info:
 def create_enemy_spawner(world: esper.World, level_data: dict):
     spawner_entity = world.create_entity()
     world.add_component(spawner_entity,
-                        CEnemySpawner(level_data["enemy_spawn_events"]))
+                        CEnemySpawner(level_data))
 
 
 def create_input_player(world: esper.World):
@@ -235,8 +227,6 @@ def create_fireball(world: esper.World,
     world.add_component(bullet_entity, CTagFireball())
     ServiceLocator.sounds_service.play(fireball_info["sound"])
                     
-
-
 def create_explosion(world: esper.World, pos: pygame.Vector2, explosion_info: dict):
     explosion_surface = ServiceLocator.images_service.get(explosion_info["image"])
     vel = pygame.Vector2(0, 0)
@@ -246,4 +236,3 @@ def create_explosion(world: esper.World, pos: pygame.Vector2, explosion_info: di
     world.add_component(explosion_entity,
                         CAnimation(explosion_info["animations"]))
     ServiceLocator.sounds_service.play(explosion_info["sound"])
-    return explosion_entity

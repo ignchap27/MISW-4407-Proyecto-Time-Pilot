@@ -50,4 +50,6 @@ def _get_direction_name(velocity: pygame.Vector2) -> str:
         return "MOVE_RIGHT"
     elif 292.5 <= angle < 337.5:
         return "MOVE_RIGHT_DIAGUP"
+    
+    
 

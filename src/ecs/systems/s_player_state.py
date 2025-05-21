@@ -4,24 +4,20 @@ import math
 
 from src.ecs.components.c_animation import CAnimation, set_animation
 from src.ecs.components.c_player_state import CPlayerState, PlayerState
+from src.ecs.components.c_surface import CSurface
 from src.ecs.components.c_velocity import CVelocity
 from src.engine.service_locator import ServiceLocator
 
 
 def system_player_state(world: esper.World, player_info: dict):
-    components = world.get_components(CPlayerState, CAnimation, CVelocity)
-    for _, (c_st, c_a, c_v) in components:
+    components = world.get_components(CPlayerState, CAnimation, CVelocity, CSurface)
+    for _, (c_st, c_a, c_v, c_srf) in components:
         if c_st.state == PlayerState.IDLE:
             _do_player_idle(c_st, c_a, c_v, player_info)
         elif c_st.state == PlayerState.MOVE:
             _do_player_move(c_st, c_a, c_v)
-def system_player_state(world: esper.World, player_info: dict):
-    components = world.get_components(CPlayerState, CAnimation, CVelocity)
-    for _, (c_st, c_a, c_v) in components:
-        if c_st.state == PlayerState.IDLE:
-            _do_player_idle(c_st, c_a, c_v, player_info)
-        elif c_st.state == PlayerState.MOVE:
-            _do_player_move(c_st, c_a, c_v)
+        elif c_st.state == PlayerState.DEAD:
+            c_srf.active = False
 
 
 def _do_player_idle(c_st: CPlayerState, c_a: CAnimation, c_v: CVelocity, player_info: dict):

@@ -1,6 +1,8 @@
 
 
 import esper
+from src.ecs.components.c_player_lives import CPlayerLives
+from src.ecs.components.c_player_state import CPlayerState, PlayerState
 from src.ecs.components.c_surface import CSurface
 from src.ecs.components.c_transform import CTransform
 from src.ecs.components.tags.c_tag_enemy import CTagEnemy
@@ -21,8 +23,21 @@ def system_collision_player_enemy(world: esper.World, player_entity: int,
         ene_rect = c_s.area.copy()
         ene_rect.topleft = c_t.pos
         if ene_rect.colliderect(pl_rect):
-            world.delete_entity(enemy_entity)
-            pl_t.pos.x = level_cfg["player_spawn"]["position"]["x"] - pl_s.area.w / 2
-            pl_t.pos.y = level_cfg["player_spawn"]["position"]["y"] - pl_s.area.h / 2
-            create_explosion(world, c_t.pos, explosion_info)
-            ServiceLocator.sounds_service.play(explosion_info["sound"])
+            lives_component = world.component_for_entity(player_entity, CPlayerLives)
+            if lives_component.lives > 1:
+                lives_component.lives -= 1
+                world.delete_entity(enemy_entity)
+                pl_t.pos.x = level_cfg["player_spawn"]["position"]["x"] - pl_s.area.w / 2
+                pl_t.pos.y = level_cfg["player_spawn"]["position"]["y"] - pl_s.area.h / 2
+                create_explosion(world, c_t.pos, explosion_info)
+                ServiceLocator.sounds_service.play(explosion_info["sound"])
+            else:
+                c_t_player = world.component_for_entity(player_entity, CTransform)
+                
+                if world.has_component(player_entity, CPlayerState):
+                    player_state = world.component_for_entity(player_entity, CPlayerState)
+                    player_state.state = PlayerState.DEAD
+                    player_state.visible = False
+                    
+                create_explosion(world, c_t_player.pos, explosion_info)
+                ServiceLocator.sounds_service.play('assets/snd/player_die.ogg')

@@ -33,6 +33,7 @@ from src.ecs.components.c_input_command import CInputCommand, CommandPhase
 
 from src.create.prefab_creator import create_cloud, create_enemy_spawner, create_fireball, create_input_player, create_player_square, create_bullet
 from src.ecs.systems.s_steering import system_steering
+from src.engine.game.game_over import GameOverScene
 from src.engine.game.menu_scene import MenuScene
 from src.engine.game.play_scene import PlayScene
 from src.engine.scenes.scene import Scene
@@ -60,7 +61,8 @@ class GameEngine:
 
         self._scenes:dict[str, Scene] = {}
         self._scenes["MENU_SCENE"] = MenuScene(self)
-        self._scenes["LEVEL_01"] = PlayScene(self)
+        self._scenes["LEVEL_01"] = PlayScene(self, "01")
+        self._scenes["GAME_OVER"] = GameOverScene(self)
         self._current_scene:Scene = None
         self._scene_name_to_switch:str = None
         self.is_paused = False

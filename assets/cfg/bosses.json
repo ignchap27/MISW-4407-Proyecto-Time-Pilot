@@ -1,4 +1,4 @@
-{
+{ "explosion": "assets/img/explosion_large_bosses_player.png",
   "boss_01": {
     "image": "assets/img/boss_01.png",
     "animations": {
